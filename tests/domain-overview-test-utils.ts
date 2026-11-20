@@ -240,7 +240,9 @@ export async function openFilters(page: Page) {
   const toggle = page.getByRole("button", { name: /^Filters\b/ });
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(page.getByRole("button", { name: /Apply filters/ })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /Apply filters/ }),
+  ).toBeVisible();
   await expectPageResponsive(page, "after opening filters");
 }
 
@@ -248,7 +250,9 @@ export async function closeFilters(page: Page) {
   const toggle = page.getByRole("button", { name: /^Filters\b/ });
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(page.getByRole("button", { name: /Apply filters/ })).toBeHidden();
+  await expect(
+    page.getByRole("button", { name: /Apply filters/ }),
+  ).toBeHidden();
   await expectPageResponsive(page, "after closing filters");
 }
 

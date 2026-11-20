@@ -19,7 +19,7 @@ To enable direct commercial lookups, choose `SEO_PAID_PROVIDER=dataforseo` and s
 - **Cloudflare self-hosting:** in `.env.selfhost` (see [`SELF_HOSTING_CLOUDFLARE.md`](./SELF_HOSTING_CLOUDFLARE.md)). Legacy button/Wrangler deployments: as a Worker secret in the dashboard under `Settings` -> `Variables & Secrets`.
 - **Local development:** in `.env.local` (see [`LOCAL_DEVELOPMENT.md`](./LOCAL_DEVELOPMENT.md)).
 
-## Use Treg for commercial lookups
+## No DataForSEO account? Use treg
 
 [treg](https://treg.to) is a third-party reseller, unaffiliated with OpenSEO. It sells DataForSEO calls one at a time from a prepaid balance, at DataForSEO's own rates, so you can skip the DataForSEO signup and its $50 minimum top-up. New treg accounts include $1 of free credit.
 
