@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { AlertTriangle } from "lucide-react";
 import { ExportMenu } from "@/client/components/ExportMenu";
 import {
@@ -11,8 +11,6 @@ import type { ExportFormat } from "@/client/lib/exportRows";
 type Props = {
   /** The scope's condition limit when saved filters exceed it, else null. */
   overBudgetLimit: number | null;
-  showFilters: boolean;
-  onToggleFilters: () => void;
   activeFilterCount: number;
   countLabel: string;
   totalCount: number | null;
@@ -25,8 +23,6 @@ type Props = {
 /** The toolbar, over-budget warning and filter panel above a domain table. */
 export function DomainTableToolbar({
   overBudgetLimit,
-  showFilters,
-  onToggleFilters,
   activeFilterCount,
   countLabel,
   totalCount,
@@ -35,6 +31,7 @@ export function DomainTableToolbar({
   filterPanel,
   children,
 }: Props) {
+  const [showFilters, setShowFilters] = useState(false);
   return (
     <>
       <DataTableToolbar
@@ -48,7 +45,7 @@ export function DomainTableToolbar({
         <DataTableFilterToggle
           open={showFilters}
           activeCount={activeFilterCount}
-          onToggle={onToggleFilters}
+          onToggle={() => setShowFilters((open) => !open)}
         />
         <span className="text-sm text-muted-foreground">
           {(totalCount ?? fallbackCount).toLocaleString()} {countLabel}

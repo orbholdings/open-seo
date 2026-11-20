@@ -127,6 +127,7 @@ assert.ok(
   "Expected the missing page title finding",
 );
 const other = await call("get_audit_status", { projectId: second.id, auditId });
+assert.match(other.content[0].text, /Audit not found in this project/i);
 assert.ok(!other.structuredContent?.status, "An audit belongs to its project");
 console.log(
   "Disconnected Google reports, paid-check refusal and two-page technical audit passed",

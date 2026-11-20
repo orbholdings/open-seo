@@ -17,6 +17,9 @@ import {
   waitForDomainRows,
 } from "./domain-overview-test-utils";
 
+// The benchmark records its own timings. DOM snapshots and video add main-thread work.
+test.use({ trace: "off", video: "off" });
+
 const CPU_THROTTLE_RATE = Number(process.env.DOMAIN_FILTER_CPU_THROTTLE ?? 6);
 const PERF_BUDGETS = {
   actionMs: Number(process.env.DOMAIN_FILTER_ACTION_MS ?? 2_500),
@@ -48,9 +51,6 @@ test.describe("Domain Overview filter performance", () => {
 
     await installDomainPerfProbe(page);
     const client = await page.context().newCDPSession(page);
-    await client.send("Emulation.setCPUThrottlingRate", {
-      rate: CPU_THROTTLE_RATE,
-    });
 
     const checkpoints: PerfCheckpoint[] = [];
     let finalMetrics: DomainPerfMetrics | null = null;
@@ -69,6 +69,10 @@ test.describe("Domain Overview filter performance", () => {
     try {
       await openDomainOverview(page, "pages");
       await waitForDomainRows(page, "Top Pages");
+      // Measure editing the loaded table, including every filter interaction.
+      await client.send("Emulation.setCPUThrottlingRate", {
+        rate: CPU_THROTTLE_RATE,
+      });
       await resetDomainPerfMetrics(page);
       await captureCheckpoint("ready on Top Pages");
 

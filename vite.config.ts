@@ -24,7 +24,7 @@ const portablePassword = join(
 );
 
 export default defineConfig(
-  async ({ mode, command }): Promise<ViteUserConfig> => {
+  async ({ mode, command, isPreview }): Promise<ViteUserConfig> => {
     // Vitest sets mode to "test". Return a config without the Cloudflare and
     // TanStack Start plugins so unit tests never boot workerd or the SSR dev
     // server; only the tsconfig path alias is needed.
@@ -154,6 +154,16 @@ export default defineConfig(
               mode,
             })
           : cloudflare({
+              config:
+                command === "serve" && !isPreview && mode === "e2e"
+                  ? {
+                      vars: {
+                        AUTH_MODE: "local_noauth",
+                        SEO_PAID_PROVIDER: "off",
+                        OPENSEO_TELEMETRY_DISABLED: "true",
+                      },
+                    }
+                  : undefined,
               ...(standalone
                 ? { configPath: "./wrangler.standalone.json" }
                 : {}),
