@@ -137,6 +137,19 @@ describe("whose calls they are, behind the gateway", () => {
     });
   }
 
+  it.each(["off", "treg", "unknown"])(
+    "blocks gateway SEO before any call for %s",
+    async (mode) => {
+      gateway();
+      workerEnv.SEO_PAID_PROVIDER = mode;
+      expect(await hasProviderAccess("dataforseo")).toBe(false);
+      await expect(getDataforseoFetch()).rejects.toMatchObject({
+        code: "PAID_SEO_UNAVAILABLE",
+      });
+      expect(sent).toHaveLength(0);
+    },
+  );
+
   it("forwards the identity of the request it serves", async () => {
     gateway();
     const token = new UnsecuredJWT({ org_id: "org_a" })

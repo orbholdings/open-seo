@@ -4,6 +4,8 @@ Run OpenSEO on your own server or computer with Docker Compose. The image is pre
 
 Already running the older single-container image (`ghcr.io/every-app/open-seo`)? It keeps getting updates. When you are ready, [move to this setup](#move-from-the-old-docker-image); your data comes with you.
 
+For this fork on Coolify, build the checked-out branch with the [free-first deployment guide](./FREE_FIRST_SETUP.md). The quickstart below pulls the upstream image.
+
 ## Install
 
 You need Docker Engine or Docker Desktop with Compose and at least 4 GiB of memory for Docker. The crawler, project management and Google reports work without a paid SEO provider. Every command below runs from the repository root:
@@ -26,8 +28,6 @@ docker compose logs -f init
 Wait for `OpenSEO initialized and ready.`, open <http://localhost:3001> and create the administrator's account. Registration closes once that account exists, so create it before you put the installation on the internet.
 
 ### Coolify, Portainer and Dokploy
-
-To build this fork on Coolify, use the root [free-first Compose setup](./FREE_FIRST_SETUP.md).
 
 `deploy/standalone/compose.yaml` reads no other files from the repository, so you can paste it into a platform that runs Compose files, with the variables from `deploy/standalone/.env.example`. Point the platform's domain at the `web` service on port 80 and set `BETTER_AUTH_URL` to that `https://` address. The `init` service exits after each start by design.
 

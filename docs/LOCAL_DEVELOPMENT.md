@@ -24,11 +24,8 @@ the repository's lockfile as incompatible.
 Configure `.env.local`:
 
 1. `cp .env.example .env.local`
-2. Add `DATAFORSEO_API_KEY` as a base64-encoded `login:password` value:
-
-   `printf '%s' 'YOUR_LOGIN:YOUR_PASSWORD' | base64`
-
-3. Set `AUTH_MODE=local_noauth` for normal local development.
+2. Set `AUTH_MODE=local_noauth` for local development.
+3. Set `SEO_PAID_PROVIDER=off` to run the app and crawler with paid lookups disabled. To test a commercial integration, follow the [provider setup guide](./DATAFORSEO_API_KEY.md).
 
 Run locally:
 

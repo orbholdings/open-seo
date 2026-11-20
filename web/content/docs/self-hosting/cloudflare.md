@@ -12,7 +12,6 @@ You sign in with email and password accounts: the first visitor creates the admi
 - **Node 22.6 or newer** and **pnpm** (`corepack enable` sets it up).
 - **A Cloudflare account with R2 enabled.** Activating R2 requires a payment method on file, even within its free tier — if you have never used R2, open `R2` in the Cloudflare dashboard once.
 - **A workers.dev subdomain.** A new account has none until you open `Workers & Pages` in the Cloudflare dashboard once; without it the bootstrap below fails with "You need a workers.dev subdomain". The subdomain becomes part of your OpenSEO URL.
-- **A DataForSEO account** — see [DataForSEO API key setup](/docs/self-hosting#dataforseo-api-key-setup).
 
 ## 1) Clone your OpenSEO repo
 
@@ -43,7 +42,7 @@ pnpm alchemy cloudflare bootstrap                # deploys alchemy's state-store
 
 ## 3) Create `.env.selfhost`
 
-Copy the template and set `DATAFORSEO_API_KEY`; everything else is optional:
+Copy the template. Leave paid lookups off to use the built-in crawler and your connected Google properties.
 
 ```bash
 cp deploy/.env.selfhost.example .env.selfhost

@@ -237,14 +237,18 @@ export async function switchDomainTab(page: Page, tab: DomainTab) {
 }
 
 export async function openFilters(page: Page) {
-  await page.getByRole("button", { name: /Filters/ }).click();
-  await expect(page.getByText("Refine table results")).toBeVisible();
+  const toggle = page.getByRole("button", { name: /^Filters\b/ });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("button", { name: /Apply filters/ })).toBeVisible();
   await expectPageResponsive(page, "after opening filters");
 }
 
 export async function closeFilters(page: Page) {
-  await page.getByRole("button", { name: /Filters/ }).click();
-  await expect(page.getByText("Refine table results")).toBeHidden();
+  const toggle = page.getByRole("button", { name: /^Filters\b/ });
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByRole("button", { name: /Apply filters/ })).toBeHidden();
   await expectPageResponsive(page, "after closing filters");
 }
 

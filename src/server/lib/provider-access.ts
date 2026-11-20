@@ -9,6 +9,7 @@ import { createTregDataforseoFetch } from "@/server/lib/dataforseo/treg";
 import { gatewayCallFor } from "@/server/lib/gateway-attribution";
 import {
   PAID_SEO_UNAVAILABLE,
+  allowsPaidSeoProvider,
   selectPaidSeoProvider,
 } from "@/shared/paid-seo.mjs";
 import { DATAFORSEO_NOT_SET_UP_MESSAGE } from "@/shared/gateway-setup-messages";
@@ -59,6 +60,13 @@ async function gatewayFetch(provider: OpenSeoProvider) {
   }
 }
 
+async function allowsGatewayDataforseo() {
+  return allowsPaidSeoProvider(
+    await getOptionalEnvValue("SEO_PAID_PROVIDER"),
+    "dataforseo",
+  );
+}
+
 async function localPaidSeoFetch(): Promise<typeof fetch | null> {
   const [mode, directKey, tregToken] = await Promise.all([
     getOptionalEnvValue("SEO_PAID_PROVIDER"),
@@ -78,6 +86,8 @@ async function localPaidSeoFetch(): Promise<typeof fetch | null> {
 /** A fetch that reaches DataForSEO authenticated, for this deployment. */
 export async function getDataforseoFetch(): Promise<typeof fetch> {
   if (await isBehindEveryAppGateway()) {
+    if (!(await allowsGatewayDataforseo()))
+      throw new AppError("PAID_SEO_UNAVAILABLE", PAID_SEO_UNAVAILABLE);
     const providerFetch = await gatewayFetch("dataforseo");
     if (!providerFetch) {
       // Only local dev gets here (production always has the binding). The
@@ -114,6 +124,8 @@ export async function hasProviderAccess(
   provider: OpenSeoProvider,
 ): Promise<boolean> {
   if (await isBehindEveryAppGateway()) {
+    if (provider === "dataforseo" && !(await allowsGatewayDataforseo()))
+      return false;
     const status = await integrationStatus({
       env: await gatewayEnv(),
       provider,

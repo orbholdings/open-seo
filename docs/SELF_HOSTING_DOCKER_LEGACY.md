@@ -11,7 +11,6 @@ The default `compose.yaml` uses the published GHCR image:
 ## Prerequisites
 
 - Docker Desktop (or Docker Engine + Docker Compose)
-- A DataForSEO API key (see [`DATAFORSEO_API_KEY.md`](./DATAFORSEO_API_KEY.md))
 
 ## Quickstart
 
@@ -19,7 +18,7 @@ The default `compose.yaml` uses the published GHCR image:
 cp .env.example .env
 ```
 
-Set `DATAFORSEO_API_KEY` in `.env` using the [DataForSEO setup guide](./DATAFORSEO_API_KEY.md), then start OpenSEO:
+For a build of this fork, leave commercial credentials empty for free audits. The [provider guide](./DATAFORSEO_API_KEY.md) covers optional paid research. Start the container with Compose.
 
 ```bash
 docker compose up -d

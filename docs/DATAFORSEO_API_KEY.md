@@ -1,5 +1,7 @@
 # DataForSEO API Key Setup
 
+Technical audits and connected Google reports work without commercial SEO credentials. Keep `SEO_PAID_PROVIDER=off` to block paid SEO requests, including scheduled checks.
+
 OpenSEO uses [DataForSEO](https://dataforseo.com/?aff=255379) to fetch SEO data. It's a pay-as-you-go third-party service unaffiliated with OpenSEO. You need an API key to connect OpenSEO to it.
 
 New DataForSEO accounts include $1 of free credit to test with, and the minimum top-up is $50.
@@ -11,20 +13,20 @@ New DataForSEO accounts include $1 of free credit to test with, and the minimum 
 
 ## Where to set it
 
-Set the value as `DATAFORSEO_API_KEY`:
+To enable direct commercial lookups, choose `SEO_PAID_PROVIDER=dataforseo` and set `DATAFORSEO_API_KEY` in the environment for your installation.
 
 - **Docker self-hosting:** in `deploy/standalone/.env` (see [`SELF_HOSTING_DOCKER.md`](./SELF_HOSTING_DOCKER.md)), or `.env` for the [older single-container image](./SELF_HOSTING_DOCKER_LEGACY.md).
 - **Cloudflare self-hosting:** in `.env.selfhost` (see [`SELF_HOSTING_CLOUDFLARE.md`](./SELF_HOSTING_CLOUDFLARE.md)). Legacy button/Wrangler deployments: as a Worker secret in the dashboard under `Settings` -> `Variables & Secrets`.
 - **Local development:** in `.env.local` (see [`LOCAL_DEVELOPMENT.md`](./LOCAL_DEVELOPMENT.md)).
 
-## No DataForSEO account? Use treg
+## Use Treg for commercial lookups
 
 [treg](https://treg.to) is a third-party reseller, unaffiliated with OpenSEO. It sells DataForSEO calls one at a time from a prepaid balance, at DataForSEO's own rates, so you can skip the DataForSEO signup and its $50 minimum top-up. New treg accounts include $1 of free credit.
 
 1. Create a team at [treg.to](https://treg.to) and copy its API token.
-2. Set it as `TREG_API_TOKEN` instead of `DATAFORSEO_API_KEY`: in `deploy/standalone/.env` for Docker self-hosting, `.env.selfhost` for Cloudflare self-hosting, or `.env.local` for local development. EveryApp deployments do not support treg yet.
+2. Choose `SEO_PAID_PROVIDER=treg` and set `TREG_API_TOKEN` in `deploy/standalone/.env` for Docker self-hosting, `.env.selfhost` for Cloudflare self-hosting, or `.env.local` for local development. EveryApp deployments do not support treg yet.
 
-When both are set, OpenSEO uses `DATAFORSEO_API_KEY`.
+With `SEO_PAID_PROVIDER=auto`, a direct DataForSEO key takes priority if both credentials are present. The [Coolify guide](./FREE_FIRST_SETUP.md) lists the available modes.
 
 treg suits trying OpenSEO and light use. Before you rely on it, know that:
 

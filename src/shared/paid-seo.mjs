@@ -1,3 +1,10 @@
+export function allowsPaidSeoProvider(
+  /** @type {string | undefined} */ mode,
+  /** @type {"dataforseo" | "treg"} */ provider,
+) {
+  return mode === undefined || mode === "auto" || mode === provider;
+}
+
 // Unset keeps the provider choice of existing installations. New Coolify
 // installations set "off" explicitly, even if a key is present.
 export function selectPaidSeoProvider(
@@ -5,16 +12,9 @@ export function selectPaidSeoProvider(
   /** @type {string | undefined} */ directKey,
   /** @type {string | undefined} */ tregToken,
 ) {
-  if (
-    (mode === undefined || mode === "auto" || mode === "dataforseo") &&
-    directKey?.trim()
-  )
+  if (allowsPaidSeoProvider(mode, "dataforseo") && directKey?.trim())
     return "dataforseo";
-  if (
-    (mode === undefined || mode === "auto" || mode === "treg") &&
-    tregToken?.trim()
-  )
-    return "treg";
+  if (allowsPaidSeoProvider(mode, "treg") && tregToken?.trim()) return "treg";
   return null;
 }
 

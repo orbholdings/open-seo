@@ -1,4 +1,7 @@
-import { selectPaidSeoProvider } from "@/shared/paid-seo.mjs";
+import {
+  allowsPaidSeoProvider,
+  selectPaidSeoProvider,
+} from "@/shared/paid-seo.mjs";
 import { AUTH_MODES } from "@/lib/auth-mode";
 import {
   looksLikeDataForSeoKey,
@@ -168,19 +171,19 @@ function checkAuthMode(env: EnvRecord, items: PreflightItem[]): void {
 }
 
 function checkDataForSeo(env: EnvRecord, items: PreflightItem[]): void {
+  const mode = env.SEO_PAID_PROVIDER || undefined;
   if (get(env, "AUTH_MODE") === "everyapp") {
     items.push({
       key: "dataforseo",
       name: "DATAFORSEO_API_KEY",
       level: "info",
-      message:
-        "Held by the Every App gateway. An admin sets it with `pnpm everyapp secret set DATAFORSEO_API_KEY`.",
+      message: allowsPaidSeoProvider(mode, "dataforseo")
+        ? "Held by the Every App gateway. An admin sets it with `pnpm everyapp secret set DATAFORSEO_API_KEY`."
+        : "Paid SEO calls through the Every App gateway are disabled.",
     });
     return;
   }
   const key = get(env, "DATAFORSEO_API_KEY");
-
-  const mode = env.SEO_PAID_PROVIDER || undefined;
   const selected = selectPaidSeoProvider(mode, key, get(env, "TREG_API_TOKEN"));
   if (selected === "treg") {
     items.push({
