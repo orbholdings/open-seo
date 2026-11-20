@@ -105,7 +105,22 @@ jobs:
           context: .
           file: deploy/standalone/Dockerfile
           push: false
-          load: false
+          load: true
+          tags: openseo-standalone:ci
           platforms: linux/amd64
           cache-from: type=gha,scope=standalone
           cache-to: type=gha,mode=max,scope=standalone
+
+      - name: Run the free-first Coolify stack on loopback
+        env:
+          COMPOSE_FILE: compose.coolify.yaml:scripts/celld/smoke/compose.yaml
+          BETTER_AUTH_URL: http://127.0.0.1:3107
+        run: |
+          export STORAGE_SECRET_KEY="$(openssl rand -hex 32)"
+          trap 'docker compose down -v' EXIT
+          docker compose up -d --no-build
+          for attempt in $(seq 1 90); do
+            if curl -fsS "$BETTER_AUTH_URL/api/health" >/dev/null; then break; fi
+            sleep 2
+          done
+          node scripts/celld/smoke/free-first.mjs "$BETTER_AUTH_URL"
