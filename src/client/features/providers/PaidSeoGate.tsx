@@ -3,7 +3,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { EmptyState } from "@/client/components/EmptyState";
 import { QueryState } from "@/client/components/QueryState";
-import { Button } from "@/client/components/ui/button";
+import { buttonVariants } from "@/client/components/ui/button";
 import { dataforseoHelpLinkOptions } from "@/client/navigation/items";
 import { getSeoApiKeyStatus } from "@/serverFunctions/config";
 
@@ -24,31 +24,26 @@ export function PaidSeoNotice({ title }: { title: string }) {
       description="New data for this tool requires an enabled DataForSEO or Treg connection. Explore the queries Google recorded for this website or crawl its pages for technical issues."
       action={
         <div className="flex flex-wrap justify-center gap-2">
-          <Button
-            nativeButton={false}
-            render={
-              <Link
-                to="/p/$projectId/search-performance"
-                params={{ projectId }}
-              />
-            }
+          <Link
+            to="/p/$projectId/search-performance"
+            params={{ projectId }}
+            className={buttonVariants()}
           >
             Search Console insights
-          </Button>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link to="/p/$projectId/audit" params={{ projectId }} />}
+          </Link>
+          <Link
+            to="/p/$projectId/audit"
+            params={{ projectId }}
+            className={buttonVariants({ variant: "outline" })}
           >
             Site Audit
-          </Button>
-          <Button
-            variant="ghost"
-            nativeButton={false}
-            render={<Link {...dataforseoHelpLinkOptions} />}
+          </Link>
+          <Link
+            {...dataforseoHelpLinkOptions}
+            className={buttonVariants({ variant: "ghost" })}
           >
             Provider setup
-          </Button>
+          </Link>
         </div>
       }
     />
