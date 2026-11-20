@@ -1,3 +1,7 @@
+import {
+  PaidSeoGate,
+  usePaidSeoStatus,
+} from "@/client/features/providers/PaidSeoGate";
 import { Link } from "@tanstack/react-router";
 import { Link2, Settings } from "lucide-react";
 import { EmptyState } from "@/client/components/EmptyState";
@@ -43,6 +47,7 @@ export function DashboardPage({
   tab?: z.infer<typeof dashboardSiteTabSchema>;
   onTabChange: (tab: z.infer<typeof dashboardSiteTabSchema>) => void;
 }) {
+  const paid = usePaidSeoStatus();
   const activationQuery = useQuery({
     queryKey: ["dashboardActivation", projectId],
     queryFn: () => getDashboardActivation({ data: { projectId } }),
@@ -82,7 +87,8 @@ export function DashboardPage({
     return <DashboardSkeleton />;
   }
 
-  const showBacklinks = activation.domain !== null;
+  const showBacklinks =
+    paid.data?.configured === true && activation.domain !== null;
   const gscConnected = activation.gsc.connected;
   const ga4Connected = activation.ga4.connected;
   const agentConnected =
@@ -154,6 +160,7 @@ export function DashboardPage({
           key={projectId}
           projectId={projectId}
           activation={activation}
+          paidResearch={paid.data?.configured === true}
         />
 
         <Tabs
@@ -224,33 +231,35 @@ export function DashboardPage({
             />
           </TabsContent>
           <TabsContent value="backlinks" keepMounted={false}>
-            {activation.domain ? (
-              <DashboardBacklinks
-                key={activation.domain}
-                projectId={projectId}
-                domain={activation.domain}
-              />
-            ) : (
-              <EmptyState
-                variant="card"
-                icon={Link2}
-                title="See who links to your website"
-                description="Add your website to track new and lost backlinks and the sites sending them."
-                action={
-                  <Button
-                    nativeButton={false}
-                    render={
-                      <Link
-                        to="/p/$projectId/settings"
-                        params={{ projectId }}
-                      />
-                    }
-                  >
-                    Add your website
-                  </Button>
-                }
-              />
-            )}
+            <PaidSeoGate title="Backlinks">
+              {activation.domain ? (
+                <DashboardBacklinks
+                  key={activation.domain}
+                  projectId={projectId}
+                  domain={activation.domain}
+                />
+              ) : (
+                <EmptyState
+                  variant="card"
+                  icon={Link2}
+                  title="See who links to your website"
+                  description="Add your website to track new and lost backlinks and the sites sending them."
+                  action={
+                    <Button
+                      nativeButton={false}
+                      render={
+                        <Link
+                          to="/p/$projectId/settings"
+                          params={{ projectId }}
+                        />
+                      }
+                    >
+                      Add your website
+                    </Button>
+                  }
+                />
+              )}
+            </PaidSeoGate>
           </TabsContent>
         </Tabs>
       </div>

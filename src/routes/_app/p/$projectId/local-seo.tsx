@@ -1,3 +1,7 @@
+import {
+  PaidSeoNotice,
+  usePaidSeoStatus,
+} from "@/client/features/providers/PaidSeoGate";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import { BackLink, PageHeader } from "@/client/components/PageHeader";
 import { pageHead } from "@/client/lib/pageHead";
@@ -15,6 +19,7 @@ export const Route = createFileRoute("/_app/p/$projectId/local-seo")({
   component: LocalSeoLayout,
 });
 function LocalSeoLayout() {
+  const paid = usePaidSeoStatus();
   const { projectId, trackerId } = useParams({ strict: false });
   return (
     <div className="px-4 py-4 pb-24 overflow-auto md:px-6 md:py-6 md:pb-8">
@@ -30,6 +35,9 @@ function LocalSeoLayout() {
             ) : undefined
           }
         />
+        {paid.data?.configured === false && (
+          <PaidSeoNotice title="New ranking checks are paused" />
+        )}
         <Outlet />
       </div>
     </div>

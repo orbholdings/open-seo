@@ -4,9 +4,11 @@ Run OpenSEO on your own server or computer with Docker Compose. The image is pre
 
 Already running the older single-container image (`ghcr.io/every-app/open-seo`)? It keeps getting updates. When you are ready, [move to this setup](#move-from-the-old-docker-image); your data comes with you.
 
+For this fork on Coolify, build the checked-out branch with the [free-first deployment guide](./FREE_FIRST_SETUP.md). The quickstart below pulls the upstream image.
+
 ## Install
 
-You need Docker Engine or Docker Desktop with Compose, at least 4 GiB of memory for Docker, and a [DataForSEO API key](./DATAFORSEO_API_KEY.md) (or a [treg token](./DATAFORSEO_API_KEY.md#no-dataforseo-account-use-treg)). Every command below runs from the repository root:
+You need Docker Engine or Docker Desktop with Compose and at least 4 GiB of memory for Docker. The crawler, project management and Google reports work without a paid SEO provider. Every command below runs from the repository root:
 
 ```sh
 git clone https://github.com/every-app/open-seo.git
@@ -15,7 +17,7 @@ export COMPOSE_FILE=deploy/standalone/compose.yaml
 cp deploy/standalone/.env.example deploy/standalone/.env
 ```
 
-In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`) and `DATAFORSEO_API_KEY` to your key. Leave `BETTER_AUTH_URL=http://localhost:3001` for use on this machine. Then start OpenSEO:
+In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`). Leave `BETTER_AUTH_URL=http://localhost:3001` for use on this machine. Then start OpenSEO:
 
 ```sh
 docker compose pull
@@ -61,6 +63,7 @@ docker compose up -d --force-recreate init web crawl-gateway
 
 | Variable                                   | Purpose                                                                                                                    |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `SEO_PAID_PROVIDER`                        | Choose `off`, `dataforseo`, `treg` or `auto`. New example configurations start with `off`.                                 |
 | `DATAFORSEO_API_KEY`                       | Base64-encoded `login:password`; keyword, backlink, rank and site data                                                     |
 | `TREG_API_TOKEN`                           | Optional, instead of `DATAFORSEO_API_KEY`: the same data, bought per call through treg (see the DataForSEO key guide)      |
 | `OPENROUTER_API_KEY`                       | SAM conversations, website research and summaries                                                                          |

@@ -53,7 +53,12 @@ export function getOpenRouterAccess(env: object): OpenRouterAccess | null {
   // Any OpenAI-compatible endpoint that speaks OpenRouter's chat API; unset
   // means OpenRouter itself.
   const baseURL = getEnvValueSync(env, "OPENROUTER_BASE_URL");
-  return apiKey ? { apiKey, baseURL } : null;
+  if (apiKey) return { apiKey, baseURL };
+  // Some private model servers accept any bearer token. An explicit
+  // endpoint AND model keep this opt-in and prevent a hosted fallback.
+  if (baseURL?.trim() && getEnvValueSync(env, "OPENROUTER_MODEL")?.trim())
+    return { apiKey: "local-model", baseURL };
+  return null;
 }
 
 /** SAM's model, from its Durable Object env. Sync: Think's getModel() is. */
@@ -63,7 +68,9 @@ export function buildSamChatModel(
 ): LanguageModelV3 {
   const access = getOpenRouterAccess(env);
   if (!access) {
-    throw new Error("OPENROUTER_API_KEY is required for the SAM agent");
+    throw new Error(
+      "Configure a model endpoint and model, or OPENROUTER_API_KEY, for SAM",
+    );
   }
   return buildChatAgentModel(
     access,
@@ -77,7 +84,7 @@ export async function requireOpenRouterAccess(): Promise<OpenRouterAccess> {
   const access = getOpenRouterAccess((await getWorkersEnv()) ?? {});
   if (!access) {
     throw new Error(
-      "Missing required environment variable: OPENROUTER_API_KEY",
+      "Configure OPENROUTER_API_KEY or a custom model endpoint and model.",
     );
   }
   return access;

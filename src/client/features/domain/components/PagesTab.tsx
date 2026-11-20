@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useMemo, type ReactNode } from "react";
 import { QueryError } from "@/client/components/QueryState";
 import { TablePagination } from "@/client/components/table/TablePagination";
 import { DomainPageLink } from "@/client/features/domain/components/DomainPageLink";
@@ -80,7 +80,6 @@ export function PagesTab({
   onPageChange,
   onPageSizeChange,
 }: Props) {
-  const [showFilters, setShowFilters] = useState(false);
   // Scope filters consume part of DataForSEO's fixed filter budget.
   const maxConditions =
     MAX_DATAFORSEO_FILTER_CONDITIONS - RESEARCH_SCOPE_FILTER_SLOTS.pages[scope];
@@ -169,7 +168,8 @@ export function PagesTab({
       sortMode={routeState.sort}
       currentSortOrder={routeState.order}
       onSortClick={onSortClick}
-      isLoading={isFetching && (showFilters || rows.length === 0)}
+      isLoading={isFetching && rows.length === 0}
+      isRefreshing={isFetching && rows.length > 0}
       isFiltered={!filtersOverBudget && activeFilterCount > 0}
       onClearFilters={resetFilters}
       error={
@@ -187,8 +187,6 @@ export function PagesTab({
           {tabs}
           <DomainTableToolbar
             overBudgetLimit={filtersOverBudget ? maxConditions : null}
-            showFilters={showFilters}
-            onToggleFilters={() => setShowFilters((prev) => !prev)}
             activeFilterCount={activeFilterCount}
             countLabel="pages"
             totalCount={totalCount}

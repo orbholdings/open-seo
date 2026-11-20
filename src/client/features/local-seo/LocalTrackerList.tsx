@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -30,6 +31,7 @@ export function LocalTrackerList({
   projectId: string;
   onAdd: () => void;
 }) {
+  const paid = usePaidSeoStatus();
   const queryClient = useQueryClient();
   const [deleteTarget, setDeleteTarget] = useState<Tracker | null>(null);
   const query = useQuery({
@@ -65,7 +67,7 @@ export function LocalTrackerList({
           <h2 className="text-sm font-semibold">Tracked Businesses</h2>
         </CardTitle>
         <CardAction className="self-center">
-          <Button size="sm" onClick={onAdd}>
+          <Button size="sm" onClick={onAdd} disabled={!paid.data?.configured}>
             <Plus data-icon="inline-start" />
             Add Business
           </Button>

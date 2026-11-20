@@ -1,3 +1,4 @@
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import { useMemo } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PromptExplorerPage } from "@/client/features/ai-search/PromptExplorerPage";
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/_app/p/$projectId/prompt-explorer")({
       aiResearchSetupQueryOptions(params.projectId),
     );
   },
-  component: PromptExplorerRoute,
+  component: () => (
+    <PaidSeoGate title="Prompt explorer">
+      <PromptExplorerRoute />
+    </PaidSeoGate>
+  ),
 });
 
 function PromptExplorerRoute() {

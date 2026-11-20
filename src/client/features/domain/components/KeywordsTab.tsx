@@ -103,7 +103,6 @@ export function KeywordsTab({
   const [selectedKeywords, setSelectedKeywords] = useState<Set<string>>(
     new Set(),
   );
-  const [showFilters, setShowFilters] = useState(false);
   // Scope filters consume part of DataForSEO's fixed filter budget.
   const maxConditions =
     MAX_DATAFORSEO_FILTER_CONDITIONS -
@@ -269,7 +268,8 @@ export function KeywordsTab({
         currentSortOrder={routeState.order}
         onSortClick={onSortClick}
         onToggleKeyword={toggleKeywordSelection}
-        isLoading={isFetching && (showFilters || rows.length === 0)}
+        isLoading={isFetching && rows.length === 0}
+        isRefreshing={isFetching && rows.length > 0}
         isFiltered={!filtersOverBudget && activeFilterCount > 0}
         onClearFilters={resetFilters}
         error={
@@ -287,8 +287,6 @@ export function KeywordsTab({
             {tabs}
             <DomainTableToolbar
               overBudgetLimit={filtersOverBudget ? maxConditions : null}
-              showFilters={showFilters}
-              onToggleFilters={() => setShowFilters((prev) => !prev)}
               activeFilterCount={activeFilterCount}
               countLabel="keywords"
               totalCount={totalCount}

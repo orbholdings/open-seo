@@ -39,8 +39,9 @@ function DataforseoApiKeyHelpPage() {
       title="Set up your DataForSEO API key"
       intro={
         <>
-          OpenSEO needs the <code>DATAFORSEO_API_KEY</code> secret before
-          keyword, domain, and SEO data workflows can run.
+          The built-in crawler and connected Google reports are free to use. An
+          optional provider supplies commercial keyword, competitor, backlink
+          and rank data.
         </>
       }
       everyAppIntro="OpenSEO's keyword, domain, backlink and rank data comes from DataForSEO. On Every App the gateway holds the key once, for every app."
@@ -51,7 +52,11 @@ function DataforseoApiKeyHelpPage() {
           {encodeStep}
           <li>
             Save the output as the <code>DATAFORSEO_API_KEY</code> secret in
-            your environment.
+            your environment. To enable direct calls in a free-first
+            installation, set <code>SEO_PAID_PROVIDER=dataforseo</code>. For
+            Treg, choose <code>SEO_PAID_PROVIDER=treg</code> and set{" "}
+            <code>TREG_API_TOKEN</code>. Apply the environment changes to the
+            running application.
           </li>
         </>
       }

@@ -8,7 +8,8 @@ Run OpenSEO on your own server or computer with Docker Compose. The image is pre
 ## Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Docker Compose), with at least 4 GiB of memory for Docker
-- A [DataForSEO API key](/docs/self-hosting#dataforseo-api-key-setup)
+
+For this fork on Coolify, build the branch using the [free-first Coolify guide](https://github.com/orbholdings/open-seo/blob/feature/free-first-seo/docs/FREE_FIRST_SETUP.md). The quickstart below pulls the upstream image.
 
 ## Quickstart
 
@@ -19,7 +20,7 @@ export COMPOSE_FILE=deploy/standalone/compose.yaml
 cp deploy/standalone/.env.example deploy/standalone/.env
 ```
 
-In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`) and `DATAFORSEO_API_KEY` to your key. Then start OpenSEO:
+In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`). Then start OpenSEO:
 
 ```bash
 docker compose pull

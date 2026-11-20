@@ -1,3 +1,4 @@
+import { buildSamChatModel, getOpenRouterAccess } from "./openrouter";
 import { generateText } from "ai";
 import { beforeEach, expect, it, vi } from "vitest";
 import { z } from "zod";
@@ -65,4 +66,27 @@ it("stays on OpenAI when the country lookup fails", async () => {
       throw new Error("offline");
     }),
   ).toBe("openai/gpt-5.6-luna");
+});
+
+it("sends keyless SAM analysis only to the explicitly configured model server", async () => {
+  const baseURL = "http://local-model:11434/v1";
+  expect(getOpenRouterAccess({ OPENROUTER_BASE_URL: baseURL })).toBeNull();
+  expect(getOpenRouterAccess({ OPENROUTER_MODEL: "local-test" })).toBeNull();
+  const transport = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(completion());
+  await generateText({
+    model: buildSamChatModel(
+      { OPENROUTER_BASE_URL: baseURL, OPENROUTER_MODEL: "local-test" },
+      "low",
+    ),
+    prompt: "Summarise the audit",
+  });
+  expect(transport).toHaveBeenCalledOnce();
+  expect(transport.mock.calls[0]?.[0]).toBe(baseURL + "/chat/completions");
+  const body = transport.mock.calls[0]?.[1]?.body;
+  if (typeof body !== "string") throw new Error("Expected a JSON request body");
+  expect(JSON.parse(body)).toMatchObject({
+    model: "local-test",
+  });
 });

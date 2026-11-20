@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -93,6 +94,7 @@ export function RankTrackingDomainDetail({
   onEdit: () => void;
 }) {
   const planStatus = useHostedPlanGate();
+  const paid = usePaidSeoStatus();
   const queryClient = useQueryClient();
   const [showAddKeywords, setShowAddKeywords] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -318,7 +320,7 @@ export function RankTrackingDomainDetail({
           metricsRefreshing={metricsRefreshing}
           trackedKeywordCount={trackedKeywordCount}
           checkBusy={isBusy}
-          checkDisabled={planStatus !== "paid"}
+          checkDisabled={planStatus !== "paid" || !paid.data?.configured}
           hasData={filtered.length > 0}
         />
 

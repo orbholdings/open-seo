@@ -1,3 +1,4 @@
+import { keywordFixturesEnabled } from "@/shared/research-fixtures";
 import { createServerFn } from "@tanstack/react-start";
 import {
   deleteSavedKeywordTagSchema,
@@ -18,10 +19,6 @@ import { recordResearchStep } from "@/server/features/activation/researchActivat
 import { requireProjectContext } from "@/serverFunctions/middleware";
 import { resolveMarket } from "@/shared/keyword-locations";
 
-function shouldUseKeywordE2eFixtures() {
-  return import.meta.env.VITE_E2E_KEYWORD_FIXTURES === "1";
-}
-
 async function getKeywordE2eFixtures() {
   return import("../../tests/fixtures/keyword-research-fixtures");
 }
@@ -35,7 +32,7 @@ export const researchKeywords = createServerFn({ method: "POST" })
       ...resolveMarket(data, context.project),
       projectId: context.projectId,
     };
-    if (shouldUseKeywordE2eFixtures()) {
+    if (keywordFixturesEnabled) {
       const fixtures = await getKeywordE2eFixtures();
       return fixtures.getKeywordResearchFixture(input);
     }

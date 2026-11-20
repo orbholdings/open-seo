@@ -23,16 +23,11 @@ import { dismissGscNudge } from "@/serverFunctions/onboarding";
  * a hosted onboarding re-engagement nudge. Shows once — server-persisted
  * dismissal means it never reappears after the user connects or dismisses, on
  * any device.
- *
- * `suppressed` lets the layout hide this when another modal (e.g. the missing
- * DataForSEO key prompt) is already showing so the two never stack.
  */
 export function GscReEngagementModal({
   projectId,
-  suppressed,
 }: {
   projectId: string | null;
-  suppressed: boolean;
 }) {
   const hosted = isHostedClientAuthMode();
   const queryClient = useQueryClient();
@@ -63,7 +58,6 @@ export function GscReEngagementModal({
   // create_project. Completing the wizard, dismissing, or connecting stamps it.
   const eligible =
     hosted &&
-    !suppressed &&
     !closed &&
     onboardingQuery.isSuccess &&
     grantQuery.isSuccess &&

@@ -37,6 +37,7 @@ type Props = {
   commitMaxPagesInput: () => number;
   maxPagesLimit: number;
   canRenderJavaScript?: boolean;
+  canRunLighthouse?: boolean;
   outOfCredits?: boolean;
 };
 
@@ -44,6 +45,7 @@ export function LaunchFormCard({
   commitMaxPagesInput,
   launchForm,
   maxPagesLimit,
+  canRunLighthouse,
   canRenderJavaScript,
   outOfCredits,
 }: Props) {
@@ -104,7 +106,10 @@ export function LaunchFormCard({
               maxPagesLimit={maxPagesLimit}
             />
             <div className="space-y-4">
-              <LighthouseOptions launchForm={launchForm} />
+              <LighthouseOptions
+                launchForm={launchForm}
+                canRunLighthouse={canRunLighthouse}
+              />
               <RenderingOptions
                 launchForm={launchForm}
                 maxPagesLimit={maxPagesLimit}
@@ -166,7 +171,10 @@ function LaunchOptions({
   );
 }
 
-function LighthouseOptions({ launchForm }: Pick<Props, "launchForm">) {
+function LighthouseOptions({
+  launchForm,
+  canRunLighthouse,
+}: Pick<Props, "launchForm" | "canRunLighthouse">) {
   return (
     <Field className="rounded-lg border border-border p-3">
       <div className="flex items-center gap-2">
@@ -174,6 +182,7 @@ function LighthouseOptions({ launchForm }: Pick<Props, "launchForm">) {
           {(field) => (
             <Switch
               id="audit-run-lighthouse"
+              disabled={canRunLighthouse !== true}
               checked={Boolean(field.state.value)}
               onCheckedChange={(checked) => field.handleChange(checked)}
             />
@@ -187,6 +196,12 @@ function LighthouseOptions({ launchForm }: Pick<Props, "launchForm">) {
         </FieldLabel>
       </div>
 
+      {canRunLighthouse === false && (
+        <FieldDescription>
+          Lighthouse sampling requires a paid SEO provider. The technical crawl
+          is available.
+        </FieldDescription>
+      )}
       <launchForm.Subscribe
         selector={(snapshot) => snapshot.values.runLighthouse}
       >

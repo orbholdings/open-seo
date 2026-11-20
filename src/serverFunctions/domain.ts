@@ -1,3 +1,4 @@
+import { domainFixturesEnabled } from "@/shared/research-fixtures";
 import { createServerFn } from "@tanstack/react-start";
 import { requireProjectContext } from "@/serverFunctions/middleware";
 import {
@@ -9,10 +10,6 @@ import {
 import { DomainService } from "@/server/features/domain/services/DomainService";
 import { recordResearchStep } from "@/server/features/activation/researchActivation";
 import { resolveLabsMarket } from "@/shared/keyword-locations";
-
-function shouldUseDomainE2eFixtures() {
-  return import.meta.env.VITE_E2E_DOMAIN_FIXTURES === "1";
-}
 
 async function getDomainE2eFixtures() {
   return import("../../tests/fixtures/domain-overview-fixtures");
@@ -27,7 +24,7 @@ export const getDomainOverview = createServerFn({ method: "POST" })
       ...resolveLabsMarket(data, context.project),
       projectId: context.projectId,
     };
-    if (shouldUseDomainE2eFixtures()) {
+    if (domainFixturesEnabled) {
       const fixtures = await getDomainE2eFixtures();
       return fixtures.getFixtureOverview(input.domain);
     }
@@ -61,7 +58,7 @@ export const getDomainKeywordsPage = createServerFn({ method: "POST" })
       ...resolveLabsMarket(data, context.project),
       projectId: context.projectId,
     };
-    if (shouldUseDomainE2eFixtures()) {
+    if (domainFixturesEnabled) {
       const fixtures = await getDomainE2eFixtures();
       return fixtures.getFixtureKeywordsPage(input);
     }
@@ -78,7 +75,7 @@ export const getDomainPagesPage = createServerFn({ method: "POST" })
       ...resolveLabsMarket(data, context.project),
       projectId: context.projectId,
     };
-    if (shouldUseDomainE2eFixtures()) {
+    if (domainFixturesEnabled) {
       const fixtures = await getDomainE2eFixtures();
       return fixtures.getFixturePagesPage(input);
     }

@@ -4,7 +4,6 @@
 
 - Node.js 20+
 - [Corepack](https://nodejs.org/api/corepack.html) (bundled through Node.js 24; install it separately on Node.js 25+)
-- A DataForSEO account/API credentials (or a [treg token](./DATAFORSEO_API_KEY.md#no-dataforseo-account-use-treg))
 
 ## Local Development Workflow
 
@@ -24,11 +23,8 @@ the repository's lockfile as incompatible.
 Configure `.env.local`:
 
 1. `cp .env.example .env.local`
-2. Add `DATAFORSEO_API_KEY` as a base64-encoded `login:password` value:
-
-   `printf '%s' 'YOUR_LOGIN:YOUR_PASSWORD' | base64`
-
-3. Set `AUTH_MODE=local_noauth` for normal local development.
+2. Set `AUTH_MODE=local_noauth` for local development.
+3. Set `SEO_PAID_PROVIDER=off` to run the app and crawler with paid lookups disabled. To test a commercial integration, follow the [provider setup guide](./DATAFORSEO_API_KEY.md).
 
 Run locally:
 

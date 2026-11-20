@@ -70,6 +70,8 @@ vi.mock("@/server/lib/dataforseo", () => ({
   createDataforseoClient: () => ({ serp: { localBatch: mocks.search } }),
 }));
 vi.mock("@/server/lib/runtime-env", () => ({
+  getOptionalEnvValue: async (name: string) =>
+    name === "DATAFORSEO_API_KEY" ? "fixture" : undefined,
   isHostedServerAuthMode: mocks.hosted,
 }));
 vi.mock("@/server/billing/subscription", () => ({
@@ -128,15 +130,13 @@ async function trackerAndInput(gridSize: 3 | 5 = 3, keywords = ["bookstore"]) {
     },
     "en",
   );
-  const state = await LocalSeoService.getTracker(
-    customer.projectId,
-    tracker.id,
-  );
+  const { id } = tracker;
+  const state = await LocalSeoService.getTracker(customer.projectId, id);
   return {
     tracker,
     input: {
       projectId: customer.projectId,
-      trackerId: tracker.id,
+      trackerId: id,
       requestId: crypto.randomUUID(),
       maxCostCredits: state.estimate.costCredits,
     },

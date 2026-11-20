@@ -1,3 +1,4 @@
+import { hasDataforseoAccess } from "@/server/lib/provider-access";
 import { AppError, describeError } from "@/server/lib/errors";
 import { pruneAiVisibility } from "./aiVisibilityRetention";
 import { AiVisibilityRepository as repo } from "../repositories/AiVisibilityRepository";
@@ -20,6 +21,7 @@ export async function runScheduledAiVisibility() {
   } catch (error) {
     console.error("[ai-visibility] retention sweep failed", error);
   }
+  if (!(await hasDataforseoAccess())) return;
   const deadline = Date.now() + TICK_DEADLINE_MS;
   let started = 0;
   let answersStarted = 0;

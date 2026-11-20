@@ -1,3 +1,4 @@
+import { requirePaidSeoAccess } from "@/server/lib/provider-access";
 import { env } from "cloudflare:workers";
 import type { BillingCustomerContext } from "@/server/billing/subscription";
 import { RankTrackingRepository } from "@/server/features/rank-tracking/repositories/RankTrackingRepository";
@@ -122,6 +123,7 @@ export async function beginRankCheckRun(input: {
   trigger: "manual" | "scheduled";
   workflowStartErrorMessage: string;
 }): Promise<RankCheckTriggerResult> {
+  await requirePaidSeoAccess();
   // At most two attempts: once normally, once after clearing a stale blocker.
   for (let attempt = 0; attempt < 2; attempt++) {
     const runId = crypto.randomUUID();

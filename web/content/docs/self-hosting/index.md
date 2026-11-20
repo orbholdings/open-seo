@@ -1,9 +1,9 @@
 ---
 title: "Self-Hosting OpenSEO"
-description: "Run OpenSEO yourself with Docker or Cloudflare, bring your own DataForSEO API key, and pay only for what you use."
+description: "Run technical audits and connect Google reports for several websites. Enable paid SEO data when you need it."
 ---
 
-OpenSEO is free and open source. Self-hosting means the app costs $0. You bring your own DataForSEO API key and pay DataForSEO directly for API usage.
+OpenSEO is free and open source. Create a project per website, crawl its pages and connect its Search Console and Analytics properties. Commercial keyword, competitor and backlink data are optional.
 
 There are two self-hosting paths. Both use email and password accounts: the first visitor creates the admin account and teammates join from invitation links.
 
@@ -14,13 +14,15 @@ OpenSEO also runs on [EveryApp](https://everyapp.com/docs/apps/openseo), which i
 
 For security-conscious setups, you can replace the accounts with your own network controls: Cloudflare Access in front of the Cloudflare deploy, or Docker without sign-in behind Tailscale or a private network.
 
+For this fork on your own VPS, use the [free-first Coolify guide](https://github.com/orbholdings/open-seo/blob/feature/free-first-seo/docs/FREE_FIRST_SETUP.md).
+
 ## DataForSEO API key setup
 
 OpenSEO uses [DataForSEO](https://dataforseo.com/?aff=255379) to fetch SEO data. DataForSEO is a paid third-party service unaffiliated with OpenSEO. You need an API key to connect OpenSEO to it.
 
 1. Go to [DataForSEO API Access](https://app.dataforseo.com/api-access?aff=255379).
 2. Copy the API credential labelled "Base64" from the API Access page.
-3. Set this as `DATAFORSEO_API_KEY` in your environment:
+3. To enable direct lookups in this fork, set `SEO_PAID_PROVIDER=dataforseo` and `DATAFORSEO_API_KEY` in your environment.
    - Docker: `deploy/standalone/.env`
    - Cloudflare: `.env.selfhost`
    - Local development: `.env.local`

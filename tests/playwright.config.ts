@@ -25,8 +25,9 @@ export default defineConfig({
   },
   webServer: {
     cwd: repoRoot,
+    // Use production React so its development instrumentation does not distort interaction timings.
     command:
-      "NODE_OPTIONS= AUTH_MODE=local_noauth VITE_E2E_DOMAIN_FIXTURES=1 VITE_E2E_KEYWORD_FIXTURES=1 PORT=3101 pnpm exec vite dev --host 127.0.0.1 --strictPort",
+      "NODE_OPTIONS= NODE_ENV=production VITE_SHOW_DEVTOOLS=false AUTH_MODE=local_noauth VITE_E2E_DOMAIN_FIXTURES=1 VITE_E2E_KEYWORD_FIXTURES=1 PORT=3101 pnpm exec vite dev --mode e2e --host 127.0.0.1 --strictPort",
     url: "http://localhost:3101",
     reuseExistingServer: false,
     timeout: 120_000,

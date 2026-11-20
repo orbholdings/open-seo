@@ -1,3 +1,4 @@
+import { hasDataforseoAccess } from "@/server/lib/provider-access";
 /* eslint-disable max-lines -- the SAM Durable Object: per-turn gates, credit hold and metering, telemetry, and recovery hooks */
 import { Think } from "@cloudflare/think";
 import type {
@@ -283,7 +284,10 @@ export class SamChatAgent extends Think {
           languageCode: ctx.project.languageCode,
         },
         // Nothing recorded about the business yet: SAM runs its intake flow.
-        { intakeMode: context.missingSections.includes("business_overview") },
+        {
+          intakeMode: context.missingSections.includes("business_overview"),
+          paidSeoAvailable: await hasDataforseoAccess(),
+        },
       );
     });
   }

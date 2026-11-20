@@ -1,3 +1,4 @@
+import { hasDataforseoAccess } from "@/server/lib/provider-access";
 import { isAuditRenderingAllowed } from "@/server/lib/audit/rendering-policy";
 import { CrawlerCredentialService } from "@/server/features/audit/services/CrawlerCredentialService";
 import { createServerFn } from "@tanstack/react-start";
@@ -117,6 +118,7 @@ export const getAuditCapabilities = createServerFn({ method: "POST" })
   .middleware(requireProjectContext)
   .validator(getAuditHistorySchema)
   .handler(async () => ({
+    canRunLighthouse: await hasDataforseoAccess(),
     canRenderJavaScript: await isAuditRenderingAllowed(),
     // Saving and replaying Shopify crawler access needs the optional
     // CRAWLER_ACCESS_SECRET.

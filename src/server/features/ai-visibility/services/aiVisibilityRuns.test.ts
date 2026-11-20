@@ -23,7 +23,8 @@ vi.mock("cloudflare:workers", () => ({
 vi.mock("@/db", () => ({ db: testDb.db }));
 vi.mock("@/db/runBatch", () => ({ runBatch: testDb.runBatch }));
 vi.mock("@/server/lib/runtime-env", () => ({
-  getOptionalEnvValue: async () => "dataforseo-key",
+  getOptionalEnvValue: async (name: string) =>
+    name === "DATAFORSEO_API_KEY" ? "dataforseo-key" : undefined,
   isHostedServerAuthMode: hosted,
 }));
 vi.mock("@/server/billing/subscription", () => ({
