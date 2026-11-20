@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Grid3x3, List, Pencil, Play } from "lucide-react";
@@ -76,6 +77,7 @@ function TrackerContent({
   onSearchChange: (search: LocalSeoSearch) => void;
 }) {
   const { tracker, keywords, checks, scans, estimate } = data;
+  const paid = usePaidSeoStatus();
   const queryClient = useQueryClient();
   const [confirm, setConfirm] = useState<string | null>(null);
   const [managingKeywords, setManagingKeywords] = useState(false);
@@ -150,7 +152,9 @@ function TrackerContent({
             </Button>
             <Button
               size="sm"
-              disabled={!keywords.length || Boolean(active)}
+              disabled={
+                !paid.data?.configured || !keywords.length || Boolean(active)
+              }
               pending={start.isPending}
               onClick={() => setConfirm(crypto.randomUUID())}
             >

@@ -1,3 +1,4 @@
+import { requirePaidSeoAccess } from "@/server/lib/provider-access";
 import { env } from "cloudflare:workers";
 import { z } from "zod";
 import { createDataforseoClient } from "@/server/lib/dataforseo";
@@ -235,6 +236,7 @@ async function getTracker(projectId: string, trackerId: string) {
       },
     ]),
   );
+  await requirePaidSeoAccess();
   const costCredits = checkCostCredits(tracker, keywords.length);
   return {
     tracker,

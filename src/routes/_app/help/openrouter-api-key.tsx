@@ -47,9 +47,10 @@ function OpenrouterApiKeyHelpPage() {
       title="Set up your OpenRouter API key"
       intro={
         <>
-          OpenSEO needs the <code>OPENROUTER_API_KEY</code> secret before AI
-          features like SAM, the in-app SEO agent, can run. It is optional —
-          everything else in OpenSEO works without it.
+          SAM can use a local tool-capable model. Set{" "}
+          <code>OPENROUTER_BASE_URL</code>
+          to its reachable API endpoint and <code>OPENROUTER_MODEL</code> to its
+          model name. For OpenRouter, follow the key setup below.
         </>
       }
       everyAppIntro="SAM, prompt suggestions and website research run on OpenRouter. On Every App the gateway holds the key once, for every app."

@@ -40,6 +40,7 @@ export function LaunchView({
           launchForm={controller.launchForm}
           commitMaxPagesInput={controller.commitMaxPagesInput}
           maxPagesLimit={controller.maxPagesLimit}
+          canRunLighthouse={controller.canRunLighthouse}
           canRenderJavaScript={controller.canRenderJavaScript}
           outOfCredits={controller.outOfCredits}
         />

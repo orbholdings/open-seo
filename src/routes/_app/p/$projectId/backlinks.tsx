@@ -1,3 +1,4 @@
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BacklinksPage } from "@/client/features/backlinks/BacklinksPage";
 import {
@@ -10,7 +11,11 @@ import { pageHead } from "@/client/lib/pageHead";
 export const Route = createFileRoute("/_app/p/$projectId/backlinks")({
   head: () => pageHead("Backlinks"),
   validateSearch: backlinksSearchSchema,
-  component: BacklinksRoute,
+  component: () => (
+    <PaidSeoGate title="Backlinks">
+      <BacklinksRoute />
+    </PaidSeoGate>
+  ),
 });
 
 function BacklinksRoute() {

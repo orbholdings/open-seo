@@ -26,7 +26,7 @@ const fresh: DashboardActivation = {
   dismissedSteps: [],
 };
 
-function renderChecklist(activation = fresh) {
+function renderChecklist(activation = fresh, paidResearch = true) {
   return renderToStaticMarkup(
     createElement(
       QueryClientProvider,
@@ -34,12 +34,20 @@ function renderChecklist(activation = fresh) {
       createElement(DashboardOnboarding, {
         projectId: "project-a",
         activation,
+        paidResearch,
       }),
     ),
   );
 }
 
 describe("dashboard onboarding visibility", () => {
+  it("offers the crawl without paid research steps in free mode", () => {
+    const markup = renderChecklist(fresh, false);
+    expect(markup).toContain("Audit your site");
+    expect(markup).not.toContain("Explore a competitor");
+    expect(markup).not.toContain("Get keyword ideas");
+  });
+
   it("keeps skipped steps available to restore", () => {
     const markup = renderChecklist({
       ...fresh,

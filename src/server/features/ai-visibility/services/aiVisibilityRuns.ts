@@ -82,7 +82,7 @@ export async function startRun(
   if (!(await hasDataforseoAccess()))
     throw new AiVisibilityError(
       "PROVIDER_NOT_CONFIGURED",
-      "An operator must configure DATAFORSEO_API_KEY before collection. Your saved tracker remains available.",
+      "An operator must enable DataForSEO or Treg before collection. Your saved tracker remains available.",
     );
   const project = await repo.getProject(config.tracker.projectId);
   if (

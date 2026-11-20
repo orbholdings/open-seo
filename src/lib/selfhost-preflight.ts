@@ -1,3 +1,4 @@
+import { selectPaidSeoProvider } from "@/shared/paid-seo.mjs";
 import { AUTH_MODES } from "@/lib/auth-mode";
 import {
   looksLikeDataForSeoKey,
@@ -179,7 +180,9 @@ function checkDataForSeo(env: EnvRecord, items: PreflightItem[]): void {
   }
   const key = get(env, "DATAFORSEO_API_KEY");
 
-  if (!key && get(env, "TREG_API_TOKEN")) {
+  const mode = env.SEO_PAID_PROVIDER || undefined;
+  const selected = selectPaidSeoProvider(mode, key, get(env, "TREG_API_TOKEN"));
+  if (selected === "treg") {
     items.push({
       key: "dataforseo",
       name: "TREG_API_TOKEN",
@@ -189,18 +192,24 @@ function checkDataForSeo(env: EnvRecord, items: PreflightItem[]): void {
     return;
   }
 
-  if (!key) {
+  if (!selected) {
+    const invalid =
+      mode && !["off", "auto", "dataforseo", "treg"].includes(mode);
+    const missingSelectedKey = mode === "dataforseo" || mode === "treg";
     items.push({
       key: "dataforseo",
-      name: "DATAFORSEO_API_KEY",
-      level: "warn",
-      message:
-        "Not set — all SEO data features will be unavailable until it is (or until TREG_API_TOKEN is). It is the base64 of your DataForSEO login:password (NOT the dashboard API key). See docs/DATAFORSEO_API_KEY.md.",
+      name: "SEO_PAID_PROVIDER",
+      level: invalid || missingSelectedKey ? "warn" : "info",
+      message: invalid
+        ? "Unknown provider selection. Paid SEO calls are disabled."
+        : missingSelectedKey
+          ? "The selected paid provider has no credential. Paid SEO calls are disabled."
+          : "Free mode. Use the crawler and connect Search Console or Analytics for your websites.",
     });
     return;
   }
 
-  if (!looksLikeDataForSeoKey(key)) {
+  if (!looksLikeDataForSeoKey(key ?? "")) {
     items.push({
       key: "dataforseo",
       name: "DATAFORSEO_API_KEY",
@@ -278,19 +287,20 @@ function checkOptionalFeatures(env: EnvRecord, items: PreflightItem[]): void {
           message:
             "OpenRouter comes from the Every App gateway. An admin sets it with `pnpm everyapp secret set OPENROUTER_API_KEY`.",
         }
-      : get(env, "OPENROUTER_API_KEY")
+      : get(env, "OPENROUTER_API_KEY") ||
+          (get(env, "OPENROUTER_BASE_URL") && get(env, "OPENROUTER_MODEL"))
         ? {
             key: "ai",
             name: "AI features",
             level: "ok",
-            message: "OPENROUTER_API_KEY set",
+            message: "AI endpoint configured",
           }
         : {
             key: "ai",
             name: "AI features",
             level: "info",
             message:
-              "OPENROUTER_API_KEY not set (optional) — SAM, the in-app SEO agent, is disabled.",
+              "Optional AI endpoint unconfigured. Connect a local model or set OPENROUTER_API_KEY to use SAM.",
           },
   );
 

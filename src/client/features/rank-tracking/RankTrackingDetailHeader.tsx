@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { Monitor, Plus, Settings, Smartphone } from "lucide-react";
 import { SegmentedToggle } from "@/client/components/SegmentedToggle";
 import { Button } from "@/client/components/ui/button";
@@ -54,6 +55,7 @@ export function RankTrackingDetailHeader({
   onEdit: () => void;
   onToggleAddKeywords: () => void;
 }) {
+  const paid = usePaidSeoStatus();
   return (
     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 px-4 pt-4 pb-3">
       <div>
@@ -145,7 +147,11 @@ export function RankTrackingDetailHeader({
           <Settings data-icon="inline-start" />
           Configure
         </Button>
-        <Button size="sm" onClick={onToggleAddKeywords}>
+        <Button
+          size="sm"
+          onClick={onToggleAddKeywords}
+          disabled={!paid.data?.configured}
+        >
           <Plus data-icon="inline-start" />
           Add Keywords
         </Button>

@@ -1,3 +1,4 @@
+import { hasDataforseoAccess } from "@/server/lib/provider-access";
 import { RankTrackingRepository } from "@/server/features/rank-tracking/repositories/RankTrackingRepository";
 import { beginRankCheckRun } from "@/server/features/rank-tracking/services/rankCheckRunGuards";
 import { customerHasPaidPlan } from "@/server/billing/subscription";
@@ -62,6 +63,7 @@ export async function runScheduledRankChecks(env: Env) {
     return;
   }
 
+  if (!(await hasDataforseoAccess())) return;
   const now = new Date();
   const nowIso = now.toISOString();
   const dueConfigs =

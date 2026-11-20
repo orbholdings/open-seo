@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -76,6 +77,7 @@ export function RankTrackingDomainList({
   onSearchChange: (next: RankTrackingListSearch) => void;
   onAddDomain: () => void;
 }) {
+  const paid = usePaidSeoStatus();
   const queryClient = useQueryClient();
   const [archiveTarget, setArchiveTarget] = useState<ConfigSummary | null>(
     null,
@@ -162,7 +164,11 @@ export function RankTrackingDomainList({
             <h2 className="text-sm font-semibold">Tracked Domains</h2>
           </CardTitle>
           <CardAction className="self-center">
-            <Button size="sm" onClick={onAddDomain}>
+            <Button
+              size="sm"
+              onClick={onAddDomain}
+              disabled={!paid.data?.configured}
+            >
               <Plus data-icon="inline-start" />
               Add Domain
             </Button>

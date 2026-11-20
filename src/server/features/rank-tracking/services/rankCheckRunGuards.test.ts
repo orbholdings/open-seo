@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("cloudflare:workers", () => ({
   env: {
+    DATAFORSEO_API_KEY: "fixture",
     RANK_CHECK_WORKFLOW: { get: mocks.getWorkflow },
   },
 }));

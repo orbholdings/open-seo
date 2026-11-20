@@ -302,6 +302,7 @@ const dataEnv = {
   // AUTH_MODE, DATABASE_PROVIDER, BETTER_AUTH_URL, TEAM_DOMAIN, POLICY_AUD,
   // and OPENSEO_OPERATOR_SECRET are stage-dependent and set in the stack body
   // below, which also replaces an unset BETTER_AUTH_SECRET in password mode.
+  SEO_PAID_PROVIDER: optionalVar("SEO_PAID_PROVIDER"),
   DATAFORSEO_API_KEY: optionalSecret("DATAFORSEO_API_KEY"),
   TREG_API_TOKEN: optionalSecret("TREG_API_TOKEN"),
   BYPASS_EMAIL_VERIFICATION: optionalVar("BYPASS_EMAIL_VERIFICATION"),
@@ -360,20 +361,11 @@ const dataEnv = {
   OPENSEO_TELEMETRY_DISABLED: optionalVar("OPENSEO_TELEMETRY_DISABLED"),
 };
 
-const requireDataForSeoCredentials = (prod: boolean) =>
+const validateHostedDataProvider = (prod: boolean) =>
   Effect.gen(function* () {
-    const dataforseoApiKey = Redacted.value(yield* dataEnv.DATAFORSEO_API_KEY);
-    const tregApiToken = Redacted.value(yield* dataEnv.TREG_API_TOKEN);
-    if (prod && !dataforseoApiKey) {
+    if (prod && !Redacted.value(yield* dataEnv.DATAFORSEO_API_KEY)) {
       return yield* Effect.die(
         new Error("hosted-prod requires DATAFORSEO_API_KEY."),
-      );
-    }
-    if (!dataforseoApiKey && !tregApiToken) {
-      return yield* Effect.die(
-        new Error(
-          "Set DATAFORSEO_API_KEY or TREG_API_TOKEN — see docs/DATAFORSEO_API_KEY.md.",
-        ),
       );
     }
   });
@@ -406,7 +398,7 @@ export default Alchemy.Stack(
         ),
       );
     }
-    yield* requireDataForSeoCredentials(prod);
+    yield* validateHostedDataProvider(prod);
     const workersSubdomain = yield* readWorkersSubdomain({ required: false });
     const customDomain = yield* readCustomDomain(prod);
 
@@ -517,6 +509,7 @@ export default Alchemy.Stack(
         CRAWLER_ACCESS_SECRET: dataEnv.CRAWLER_ACCESS_SECRET,
         WEB_BOT_AUTH_JWK: dataEnv.WEB_BOT_AUTH_JWK,
         CONTEXT_API_KEY: dataEnv.CONTEXT_API_KEY,
+        SEO_PAID_PROVIDER: dataEnv.SEO_PAID_PROVIDER,
         DATAFORSEO_API_KEY: dataEnv.DATAFORSEO_API_KEY,
         TREG_API_TOKEN: dataEnv.TREG_API_TOKEN,
         AUTUMN_SECRET_KEY: dataEnv.AUTUMN_SECRET_KEY,

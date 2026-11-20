@@ -17,7 +17,10 @@ async function handleHealthRequest(): Promise<Response> {
     (check) => check.status === "error",
   );
 
-  return Response.json({ status: hasError ? "issues" : "ok", ...setup });
+  return Response.json(
+    { status: hasError ? "issues" : "ok", ...setup },
+    { status: hasError ? 503 : 200 },
+  );
 }
 
 export const Route = createFileRoute("/api/health")({

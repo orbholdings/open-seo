@@ -35,18 +35,13 @@ if (!existsSync(envFile)) {
     "",
     `  ${cmd("cp deploy/.env.selfhost.example .env.selfhost")}`,
     "",
-    `then set ${em("DATAFORSEO_API_KEY")} (or ${em("TREG_API_TOKEN")}).`,
+    `then configure sign-in for your installation.`,
   );
 }
 const env = {};
 for (const line of readFileSync(envFile, "utf8").split("\n")) {
   const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line);
   if (match) env[match[1]] = match[2].replace(/^(["'])(.*)\1$/, "$2");
-}
-if (!env.DATAFORSEO_API_KEY?.trim() && !env.TREG_API_TOKEN?.trim()) {
-  fail(
-    `Neither ${em("DATAFORSEO_API_KEY")} nor ${em("TREG_API_TOKEN")} is set in ${envFile} — see docs/DATAFORSEO_API_KEY.md for how to get one.`,
-  );
 }
 // Mirrors the stack's default (deploy/alchemy/alchemy.run.ts): an unset
 // AUTH_MODE is the Access-gated mode. A typo would deploy that mode without

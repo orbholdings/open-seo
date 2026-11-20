@@ -1,0 +1,13 @@
+# Test overrides for compose.coolify.yaml. No external website is contacted by the fixture gateway.
+services:
+  runtime:
+    image: openseo-standalone:ci
+  init:
+    image: openseo-standalone:ci
+  crawl-gateway:
+    image: openseo-standalone:ci
+    command: [node, /fixture-gateway.mjs]
+    volumes:
+      - ./scripts/celld/smoke/fixture-gateway.mjs:/fixture-gateway.mjs:ro
+  web:
+    ports: ["127.0.0.1:3107:80"]

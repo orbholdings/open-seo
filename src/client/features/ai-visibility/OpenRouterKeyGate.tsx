@@ -37,7 +37,7 @@ export function OpenRouterKeyGate({
         className="max-w-2xl"
         icon={KeyRound}
         tone="warning"
-        title="Add an OpenRouter API key"
+        title="Connect an AI model"
         description={
           <>
             <p>
@@ -47,9 +47,9 @@ export function OpenRouterKeyGate({
               actually answer, come from your DataForSEO account.
             </p>
             <p>
-              Create a key on OpenRouter, set it as{" "}
-              <code>OPENROUTER_API_KEY</code>, restart OpenSEO, then confirm
-              here. The{" "}
+              Set a custom model endpoint and model, or create an OpenRouter key
+              and set it as <code>OPENROUTER_API_KEY</code>, restart OpenSEO,
+              then confirm here. The{" "}
               <Link
                 className="underline underline-offset-2 hover:text-foreground"
                 to="/help/openrouter-api-key"

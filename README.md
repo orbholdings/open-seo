@@ -22,7 +22,7 @@ Try OpenSEO for free on our website. If you want to support the project, a hoste
 - Modern, simple UI.
   - Focused workflows instead of a bloated, complex SEO suite.
 - No subscriptions.
-  - Bring your own DataForSEO API key and pay only for what you use.
+  - Use the crawler and your Google properties for free. Commercial SEO lookups are optional.
 - Fork and vibe code your own custom tool.
 
 ## Main SEO Workflows
@@ -59,9 +59,13 @@ everyapp setup --domain apps.yourcompany.com
 everyapp install https://github.com/every-app/open-seo
 ```
 
-### DataForSEO API Key
+### Free-first installation on Coolify
 
-You need a DataForSEO API key to get SEO data, or a [treg](https://treg.to) account which also gives access to DataForSEO. See [`docs/DATAFORSEO_API_KEY.md`](./docs/DATAFORSEO_API_KEY.md).
+Use the [Coolify setup guide](./docs/FREE_FIRST_SETUP.md) to run this fork and manage multiple websites with the built-in crawler, Google Search Console and GA4.
+
+### Optional commercial SEO data
+
+Competitive keyword volumes, backlinks and conventional rank tracking use DataForSEO or Treg. See [`docs/DATAFORSEO_API_KEY.md`](./docs/DATAFORSEO_API_KEY.md).
 
 ### Other options
 
@@ -78,7 +82,7 @@ For security-conscious setups, two advanced options replace the accounts with yo
 
 ## Costs
 
-OpenSEO needs a [DataForSEO](https://dataforseo.com/?aff=255379) API key so that you can get SEO data. You pay them directly when self hosting.
+Self-hosted HTML audits and connected Google reports require no paid SEO key. If you enable commercial lookups, your provider bills your account directly.
 
 See [openseo.so/pricing](https://openseo.so/pricing)
 

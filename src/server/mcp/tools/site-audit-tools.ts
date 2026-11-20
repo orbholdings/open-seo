@@ -164,13 +164,17 @@ export const runSiteAuditTool = {
           ? "Audit capacity reached for this account. list_site_audits shows a project's audits, and delete_site_audit frees capacity, but deleting permanently removes an audit's results and needs an owner or admin. Confirm with the user which audit to delete, then try again."
           : error instanceof AppError && error.code === "AUDIT_ALREADY_RUNNING"
             ? "This account is at its limit of concurrently running audits. Poll get_audit_status until one finishes, then try again."
-            : // startAudit refuses only rendering with FORBIDDEN; its message
-              // says why and what to do instead.
-              error instanceof AppError &&
-                error.code === "FORBIDDEN" &&
-                args.renderJavaScript
+            : error instanceof AppError &&
+                (error.code === "PAID_SEO_UNAVAILABLE" ||
+                  error.code === "AUDIT_RENDERING_UNAVAILABLE")
               ? error.message
-              : null;
+              : // startAudit refuses only rendering with FORBIDDEN; its message
+                // says why and what to do instead.
+                error instanceof AppError &&
+                  error.code === "FORBIDDEN" &&
+                  args.renderJavaScript
+                ? error.message
+                : null;
       if (refusalText) {
         return mcpResponse({
           text: refusalText,

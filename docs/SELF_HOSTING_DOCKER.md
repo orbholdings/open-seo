@@ -6,7 +6,7 @@ Already running the older single-container image (`ghcr.io/every-app/open-seo`)?
 
 ## Install
 
-You need Docker Engine or Docker Desktop with Compose, at least 4 GiB of memory for Docker, and a [DataForSEO API key](./DATAFORSEO_API_KEY.md) (or a [treg token](./DATAFORSEO_API_KEY.md#no-dataforseo-account-use-treg)). Every command below runs from the repository root:
+You need Docker Engine or Docker Desktop with Compose and at least 4 GiB of memory for Docker. The crawler, project management and Google reports work without a paid SEO provider. Every command below runs from the repository root:
 
 ```sh
 git clone https://github.com/every-app/open-seo.git
@@ -15,7 +15,7 @@ export COMPOSE_FILE=deploy/standalone/compose.yaml
 cp deploy/standalone/.env.example deploy/standalone/.env
 ```
 
-In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`) and `DATAFORSEO_API_KEY` to your key. Leave `BETTER_AUTH_URL=http://localhost:3001` for use on this machine. Then start OpenSEO:
+In `deploy/standalone/.env`, set `STORAGE_SECRET_KEY` to a unique random value (for example the output of `openssl rand -hex 32`). Leave `BETTER_AUTH_URL=http://localhost:3001` for use on this machine. Then start OpenSEO:
 
 ```sh
 docker compose pull
@@ -26,6 +26,8 @@ docker compose logs -f init
 Wait for `OpenSEO initialized and ready.`, open <http://localhost:3001> and create the administrator's account. Registration closes once that account exists, so create it before you put the installation on the internet.
 
 ### Coolify, Portainer and Dokploy
+
+To build this fork on Coolify, use the root [free-first Compose setup](./FREE_FIRST_SETUP.md).
 
 `deploy/standalone/compose.yaml` reads no other files from the repository, so you can paste it into a platform that runs Compose files, with the variables from `deploy/standalone/.env.example`. Point the platform's domain at the `web` service on port 80 and set `BETTER_AUTH_URL` to that `https://` address. The `init` service exits after each start by design.
 
@@ -61,6 +63,7 @@ docker compose up -d --force-recreate init web crawl-gateway
 
 | Variable                                   | Purpose                                                                                                                    |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `SEO_PAID_PROVIDER`                        | Choose `off`, `dataforseo`, `treg` or `auto`. New example configurations start with `off`.                                 |
 | `DATAFORSEO_API_KEY`                       | Base64-encoded `login:password`; keyword, backlink, rank and site data                                                     |
 | `TREG_API_TOKEN`                           | Optional, instead of `DATAFORSEO_API_KEY`: the same data, bought per call through treg (see the DataForSEO key guide)      |
 | `OPENROUTER_API_KEY`                       | SAM conversations, website research and summaries                                                                          |

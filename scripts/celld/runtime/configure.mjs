@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 
-const root = "/config";
+const root = process.argv[2] ?? "/config";
+const bundle = process.argv[3] ?? "/opt/openseo";
 await mkdir(root, { recursive: true, mode: 0o700 });
 const secretsFile = `${root}/secrets.json`;
 let secrets;
@@ -45,11 +46,12 @@ if (
   url.password
 )
   throw new Error("BETTER_AUTH_URL must be an origin");
-await cp("/opt/openseo", `${root}/app`, { recursive: true });
+await cp(bundle, `${root}/app`, { recursive: true });
 const config = JSON.parse(await readFile(`${root}/app/wrangler.json`, "utf8"));
 const allowed = [
   "DATAFORSEO_API_KEY",
   "TREG_API_TOKEN",
+  "SEO_PAID_PROVIDER",
   "CONTEXT_API_KEY",
   "OPENROUTER_API_KEY",
   "OPENROUTER_BASE_URL",

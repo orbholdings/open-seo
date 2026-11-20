@@ -31,10 +31,10 @@ export function SamSetupGate({
             </p>
           ) : (
             <p>
-              SAM, OpenSEO&apos;s in-app AI agent, needs an OpenRouter API key.
-              Create a key on OpenRouter, set it as the{" "}
-              <code>OPENROUTER_API_KEY</code> environment variable, restart
-              OpenSEO, then confirm here.
+              Connect SAM to a tool-capable model on your own server with{" "}
+              <code>OPENROUTER_BASE_URL</code> and <code>OPENROUTER_MODEL</code>
+              . You can also use OpenRouter with <code>OPENROUTER_API_KEY</code>
+              .
             </p>
           )}
           <p className="text-xs">

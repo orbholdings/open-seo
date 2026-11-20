@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useState } from "react";
 import { MoreHorizontal, Play, RefreshCw } from "lucide-react";
 import { ConfirmDialog } from "@/client/components/ConfirmDialog";
@@ -39,6 +40,7 @@ export function MoreMenu({
   trackedKeywordCount: number;
   hasData: boolean;
 }) {
+  const paid = usePaidSeoStatus();
   const [confirmingRefresh, setConfirmingRefresh] = useState(false);
   return (
     <>
@@ -65,7 +67,7 @@ export function MoreMenu({
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setConfirmingRefresh(true)}
-            disabled={metricsRefreshing || !hasData}
+            disabled={metricsRefreshing || !hasData || !paid.data?.configured}
           >
             <RefreshCw className={metricsRefreshing ? "animate-spin" : ""} />
             <ItemText

@@ -1,3 +1,4 @@
+import { usePaidSeoStatus } from "@/client/features/providers/PaidSeoGate";
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { ConfirmDialog } from "@/client/components/ConfirmDialog";
@@ -23,6 +24,7 @@ export function SavedKeywordsHeader({
   onExportSheets: () => void;
   onRefreshMetrics: () => void;
 }) {
+  const paid = usePaidSeoStatus();
   const [confirmingRefresh, setConfirmingRefresh] = useState(false);
   const disabled = totalCount === 0 || exporting != null;
 
@@ -38,7 +40,7 @@ export function SavedKeywordsHeader({
               variant="outline"
               size="sm"
               title="Fetch new volume, difficulty, and CPC"
-              disabled={disabled || metricsRefreshing}
+              disabled={disabled || metricsRefreshing || !paid.data?.configured}
               onClick={() => setConfirmingRefresh(true)}
             >
               <RefreshCw

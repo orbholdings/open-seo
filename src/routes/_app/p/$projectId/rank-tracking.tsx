@@ -1,3 +1,7 @@
+import {
+  PaidSeoNotice,
+  usePaidSeoStatus,
+} from "@/client/features/providers/PaidSeoGate";
 import { createFileRoute, Outlet, useParams } from "@tanstack/react-router";
 import { BackLink, PageHeader } from "@/client/components/PageHeader";
 import { pageHead } from "@/client/lib/pageHead";
@@ -9,6 +13,7 @@ export const Route = createFileRoute("/_app/p/$projectId/rank-tracking")({
 
 function RankTrackingLayout() {
   // Only the domain detail route has a config id, and only it links back.
+  const paid = usePaidSeoStatus();
   const { projectId, configId } = useParams({ strict: false });
 
   return (
@@ -26,6 +31,9 @@ function RankTrackingLayout() {
           }
         />
 
+        {paid.data?.configured === false && (
+          <PaidSeoNotice title="New ranking checks are paused" />
+        )}
         <Outlet />
       </div>
     </div>
