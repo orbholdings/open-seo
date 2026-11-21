@@ -21,5 +21,16 @@ export async function publicFetch(
   const headers = new Headers(init.headers);
   headers.set("x-crawl-url", new URL(input).href);
   headers.set("x-crawl-secret", secret);
-  return fetch(gateway, { ...init, headers, redirect: "manual" });
+  const response = await fetch(gateway, {
+    ...init,
+    headers,
+    redirect: "manual",
+  });
+  if (response.headers.get("x-openseo-crawl-error") === "1") {
+    await response.body?.cancel();
+    throw new Error(
+      `Crawl gateway could not fetch the URL (HTTP ${response.status})`,
+    );
+  }
+  return response;
 }

@@ -6,7 +6,6 @@ import {
 } from "@/client/components/ui/alert";
 import type { AuditResultsData } from "@/client/features/audit/results/types";
 
-/** Report notices about JavaScript: app shells, and pages a render missed. */
 export function RenderingWarnings({ data }: { data: AuditResultsData }) {
   const rendered = data.audit.config.renderJavaScript;
   const hasShells = data.issueGroups.some(
@@ -30,7 +29,7 @@ export function RenderingWarnings({ data }: { data: AuditResultsData }) {
         </Alert>
       )}
 
-      {rendered && unreadCount > 0 && (
+      {unreadCount > 0 && (
         <Alert variant="warning">
           <ShieldAlert />
           <AlertTitle>
