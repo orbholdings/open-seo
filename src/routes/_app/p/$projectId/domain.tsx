@@ -1,3 +1,5 @@
+import { domainFixturesEnabled } from "@/shared/research-fixtures";
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import {
   createFileRoute,
   stripSearchParams,
@@ -45,7 +47,13 @@ export const Route = createFileRoute("/_app/p/$projectId/domain")({
   search: {
     middlewares: [stripSearchParams(DEFAULT_DOMAIN_SEARCH)],
   },
-  component: DomainOverviewRoute,
+  component: domainFixturesEnabled
+    ? DomainOverviewRoute
+    : () => (
+        <PaidSeoGate title="Domain overview">
+          <DomainOverviewRoute />
+        </PaidSeoGate>
+      ),
 });
 
 function DomainOverviewRoute() {

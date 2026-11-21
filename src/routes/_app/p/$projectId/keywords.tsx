@@ -1,3 +1,5 @@
+import { keywordFixturesEnabled } from "@/shared/research-fixtures";
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { KeywordResearchPage } from "@/client/features/keywords/page/KeywordResearchPage";
 import {
@@ -26,7 +28,13 @@ export const Route = createFileRoute("/_app/p/$projectId/keywords")({
       replace: true,
     });
   },
-  component: KeywordResearchPageRoute,
+  component: keywordFixturesEnabled
+    ? KeywordResearchPageRoute
+    : () => (
+        <PaidSeoGate title="Keyword research">
+          <KeywordResearchPageRoute />
+        </PaidSeoGate>
+      ),
 });
 
 function KeywordResearchPageRoute() {

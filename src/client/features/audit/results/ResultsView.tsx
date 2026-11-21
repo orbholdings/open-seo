@@ -41,14 +41,11 @@ export function ResultsView({
   data,
   onTabChange,
   tab,
-  siteBlocked,
 }: {
   projectId: string;
   data: AuditResultsData;
   tab: string;
   onTabChange: (tab: ResultsTab) => void;
-  /** The page already says bot protection blocked the whole site. */
-  siteBlocked: boolean;
 }) {
   const { audit, lighthouse, issueGroups } = data;
   const auditRef = { projectId, auditId: audit.id };
@@ -115,11 +112,11 @@ export function ResultsView({
         />
       )}
 
-      {!shopifyLimited && !siteBlocked && blockedCount > 0 && (
+      {!shopifyLimited && blockedCount > 0 && (
         <Alert variant="warning">
           <ShieldAlert />
           <AlertTitle>
-            Bot protection blocked our crawler on {blockedCount}{" "}
+            The crawler was blocked on {blockedCount}{" "}
             {blockedCount === 1 ? "page" : "pages"}.
           </AlertTitle>
           <AlertDescription>

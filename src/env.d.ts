@@ -112,7 +112,8 @@ declare namespace Cloudflare {
     TURNSTILE_SITE_KEY?: string;
 
     // DataForSEO API Basic auth value (base64 of login:password)
-    DATAFORSEO_API_KEY: string;
+    DATAFORSEO_API_KEY?: string;
+    SEO_PAID_PROVIDER?: string;
     // Alternative to DATAFORSEO_API_KEY: buy DataForSEO calls through treg.to.
     TREG_API_TOKEN?: string;
     LOCAL_RANK_WORKFLOW: Workflow<

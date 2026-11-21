@@ -319,7 +319,9 @@ export async function researchWebsite(
                   searchOutage = results.every(
                     (searchResult) =>
                       searchResult.status === "rejected" &&
-                      isSearchOutage(searchResult.reason),
+                      (isSearchOutage(searchResult.reason) ||
+                        (searchResult.reason instanceof AppError &&
+                          searchResult.reason.code === "PAID_SEO_UNAVAILABLE")),
                   );
                   if (searchOutage)
                     return {

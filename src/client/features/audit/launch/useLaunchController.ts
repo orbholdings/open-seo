@@ -151,6 +151,7 @@ export function useLaunchController({
   return {
     launchForm,
     historyQuery,
+    canRunLighthouse: capabilitiesQuery.data?.canRunLighthouse,
     canRenderJavaScript: capabilitiesQuery.data?.canRenderJavaScript,
     maxPagesLimit,
     renderJavaScript,

@@ -1,3 +1,4 @@
+import { requirePaidSeoAccess } from "@/server/lib/provider-access";
 import { markOnboardingMilestone } from "@/server/email/onboarding-drip";
 import {
   auditRenderingUnavailableMessage,
@@ -69,7 +70,8 @@ async function startAudit(input: {
     throw new AppError("AUDIT_PAGE_LIMIT_EXCEEDED");
   }
 
-  const lighthouseStrategy = input.lighthouseStrategy ?? "auto";
+  const lighthouseStrategy = input.lighthouseStrategy ?? "none";
+  if (lighthouseStrategy !== "none") await requirePaidSeoAccess();
   const reservation = getEstimatedAuditCapacity({
     maxPages,
     lighthouseStrategy,

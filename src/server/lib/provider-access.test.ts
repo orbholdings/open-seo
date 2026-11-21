@@ -1,3 +1,4 @@
+import { dataforseoPost } from "./dataforseo/core";
 import { UnsecuredJWT } from "jose";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -26,6 +27,54 @@ function lastAuthorization() {
 }
 
 describe("provider access with the deployment's own keys", () => {
+  it.each([
+    ["no credentials", {}],
+    [
+      "off with both keys saved",
+      {
+        SEO_PAID_PROVIDER: "off",
+        DATAFORSEO_API_KEY: "direct",
+        TREG_API_TOKEN: "treg",
+      },
+    ],
+    [
+      "explicit provider missing its key",
+      { SEO_PAID_PROVIDER: "treg", DATAFORSEO_API_KEY: "direct" },
+    ],
+    [
+      "unrecognised selection",
+      { SEO_PAID_PROVIDER: "typo", TREG_API_TOKEN: "treg" },
+    ],
+    ["blank credentials", { DATAFORSEO_API_KEY: "   ", TREG_API_TOKEN: " " }],
+  ])("blocks the transport before fetch with %s", async (_label, settings) => {
+    Object.assign(workerEnv, { AUTH_MODE: "password" }, settings);
+    vi.stubGlobal("fetch", fetchMock);
+    expect(await hasProviderAccess("dataforseo")).toBe(false);
+    await expect(
+      dataforseoPost("/v3/backlinks/summary/live", []),
+    ).rejects.toMatchObject({ code: "PAID_SEO_UNAVAILABLE" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("uses the selected reseller even when a direct key exists", async () => {
+    Object.assign(workerEnv, {
+      SEO_PAID_PROVIDER: "treg",
+      DATAFORSEO_API_KEY: "direct",
+      TREG_API_TOKEN: "treg",
+    });
+    vi.stubGlobal(
+      "fetch",
+      fetchMock.mockResolvedValue(
+        Response.json({ status_code: 20000, tasks: [] }),
+      ),
+    );
+    await dataforseoPost("/v3/backlinks/summary/live", []);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://treg.to/call/dataforseo/backlinks/summary/live",
+    );
+    expect(lastAuthorization()).toBeNull();
+  });
+
   it("puts the deployment's keys on DataForSEO and Context.dev calls", async () => {
     Object.assign(workerEnv, {
       AUTH_MODE: "cloudflare_access",
@@ -87,6 +136,19 @@ describe("whose calls they are, behind the gateway", () => {
       EVERY_APP_GATEWAY: binding,
     });
   }
+
+  it.each(["off", "treg", "unknown"])(
+    "blocks gateway SEO before any call for %s",
+    async (mode) => {
+      gateway();
+      workerEnv.SEO_PAID_PROVIDER = mode;
+      expect(await hasProviderAccess("dataforseo")).toBe(false);
+      await expect(getDataforseoFetch()).rejects.toMatchObject({
+        code: "PAID_SEO_UNAVAILABLE",
+      });
+      expect(sent).toHaveLength(0);
+    },
+  );
 
   it("forwards the identity of the request it serves", async () => {
     gateway();

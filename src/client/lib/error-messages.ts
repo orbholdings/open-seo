@@ -1,3 +1,4 @@
+import { PAID_SEO_UNAVAILABLE } from "@/shared/paid-seo.mjs";
 import { FREE_MAX_AUDIT_PAGES } from "@/shared/audit-limits";
 import { GATEWAY_RENDERING_NOT_SET_UP_MESSAGE } from "@/shared/audit-rendering";
 import { isErrorCode, type ErrorCode } from "@/shared/error-codes";
@@ -47,6 +48,7 @@ const STANDARD_MESSAGES: Record<ErrorCode, string> = {
     "The connected DataForSEO account has a billing or balance issue.",
   AI_VISIBILITY_ERROR:
     "The AI visibility request could not be completed. Review the tracking settings and try again.",
+  PAID_SEO_UNAVAILABLE,
   DATAFORSEO_AUTH_FAILED: isEveryAppClientAuthMode()
     ? "DataForSEO isn't set up on your Every App gateway yet, or rejected the key it holds. An owner or admin sets it with pnpm everyapp secret set DATAFORSEO_API_KEY."
     : "DataForSEO rejected the credentials. Check that DATAFORSEO_API_KEY is the base64 of your DataForSEO login:password, and that the DataForSEO account is verified and has API access. If you use TREG_API_TOKEN instead, check the token and its balance at treg.to.",

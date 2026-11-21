@@ -53,18 +53,17 @@ test("requires credentials and rejects localhost without contacting it", async (
   await new Promise((resolve) => server.once("listening", resolve));
   try {
     const base = `http://127.0.0.1:${server.address().port}`;
-    assert.equal((await fetch(base)).status, 404);
-    assert.equal(
-      (
-        await fetch(base, {
-          headers: {
-            "x-crawl-secret": secret,
-            "x-crawl-url": "http://127.0.0.1:9000",
-          },
-        })
-      ).status,
-      403,
-    );
+    const unauthorized = await fetch(base);
+    assert.equal(unauthorized.status, 404);
+    assert.equal(unauthorized.headers.get("x-openseo-crawl-error"), "1");
+    const refused = await fetch(base, {
+      headers: {
+        "x-crawl-secret": secret,
+        "x-crawl-url": "http://127.0.0.1:9000",
+      },
+    });
+    assert.equal(refused.status, 403);
+    assert.equal(refused.headers.get("x-openseo-crawl-error"), "1");
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

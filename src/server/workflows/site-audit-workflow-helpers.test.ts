@@ -1,13 +1,15 @@
 import { spawnSync } from "node:child_process";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCrawlThrottle } from "@/server/lib/audit/crawl-throttle";
+import { runPageReporters } from "@/server/lib/audit/issues/page-reporters";
+import { getOptionalEnvValue } from "@/server/lib/runtime-env";
 import { crawlPage } from "@/server/workflows/site-audit-workflow-helpers";
 
 // No crawl gateway and no signing key configured: publicFetch is plain fetch
 // and requests go unsigned, and both env lookups must settle in microtasks so
 // the fake-timer cases below can advance past them.
 vi.mock("@/server/lib/runtime-env", () => ({
-  getOptionalEnvValue: async () => undefined,
+  getOptionalEnvValue: vi.fn(async () => undefined),
 }));
 
 const PAGE_URL = "https://example.com/page";
@@ -54,6 +56,52 @@ afterEach(() => {
 });
 
 describe("crawlPage", () => {
+  it.each([
+    { status: 502, gatewayError: true, expectedClass: "error", issues: [] },
+    { status: 403, gatewayError: true, expectedClass: "error", issues: [] },
+    {
+      status: 502,
+      gatewayError: false,
+      expectedClass: "ok",
+      issues: ["server-error"],
+    },
+    {
+      status: 403,
+      gatewayError: false,
+      expectedClass: "blocked",
+      issues: ["blocked-page"],
+    },
+  ])(
+    "classifies HTTP $status with gatewayError=$gatewayError",
+    async ({ status, gatewayError, expectedClass, issues }) => {
+      const gatewayUrl = "http://gateway.example/";
+      const env: Record<string, string> = {
+        CRAWL_GATEWAY_URL: gatewayUrl,
+        CRAWL_GATEWAY_SECRET: "test-secret",
+      };
+      const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        new Response("Unavailable", {
+          status,
+          headers: gatewayError ? { "x-openseo-crawl-error": "1" } : {},
+        }),
+      );
+      await vi.mocked(getOptionalEnvValue).withImplementation(
+        async (key) => env[key],
+        async () => {
+          const page = await crawl();
+          expect(fetchMock).toHaveBeenCalledWith(gatewayUrl, expect.anything());
+          expect(page).toMatchObject({
+            fetchClass: expectedClass,
+            statusCode: gatewayError ? 0 : status,
+          });
+          expect(
+            runPageReporters(page!).map((issue) => issue.issueType),
+          ).toEqual(issues);
+        },
+      );
+    },
+  );
+
   it("waits out the server's Retry-After and keeps the retried page", async () => {
     vi.useFakeTimers();
     const fetchMock = stubFetch(

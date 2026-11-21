@@ -1,3 +1,4 @@
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import { useEffect, useState, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AiMentionIllustration } from "@/client/components/EmptyIllustrations";
@@ -140,7 +141,11 @@ export function AiResearchSetupGate({
   const data = setup.data;
   // Saved results open without an OpenRouter key; only setup needs one.
   return (
-    <OpenRouterKeyGate projectId={projectId}>{renderSetup()}</OpenRouterKeyGate>
+    <PaidSeoGate title="AI visibility research">
+      <OpenRouterKeyGate projectId={projectId}>
+        {renderSetup()}
+      </OpenRouterKeyGate>
+    </PaidSeoGate>
   );
 
   function renderSetup() {

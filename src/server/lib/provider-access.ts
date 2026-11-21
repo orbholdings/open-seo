@@ -7,12 +7,13 @@ import { isEveryAppAuthMode } from "@/lib/auth-mode";
 import { AppError } from "@/server/lib/errors";
 import { createTregDataforseoFetch } from "@/server/lib/dataforseo/treg";
 import { gatewayCallFor } from "@/server/lib/gateway-attribution";
-import { DATAFORSEO_NOT_SET_UP_MESSAGE } from "@/shared/gateway-setup-messages";
 import {
-  getOptionalEnvValue,
-  getRequiredEnvValue,
-  getWorkersEnv,
-} from "@/server/lib/runtime-env";
+  PAID_SEO_UNAVAILABLE,
+  allowsPaidSeoProvider,
+  selectPaidSeoProvider,
+} from "@/shared/paid-seo.mjs";
+import { DATAFORSEO_NOT_SET_UP_MESSAGE } from "@/shared/gateway-setup-messages";
+import { getOptionalEnvValue, getWorkersEnv } from "@/server/lib/runtime-env";
 
 // How OpenSEO reaches the APIs it calls with a key (DataForSEO, Context.dev).
 // Self-hosters without a DataForSEO account can reach it through treg
@@ -59,9 +60,34 @@ async function gatewayFetch(provider: OpenSeoProvider) {
   }
 }
 
+async function allowsGatewayDataforseo() {
+  return allowsPaidSeoProvider(
+    await getOptionalEnvValue("SEO_PAID_PROVIDER"),
+    "dataforseo",
+  );
+}
+
+async function localPaidSeoFetch(): Promise<typeof fetch | null> {
+  const [mode, directKey, tregToken] = await Promise.all([
+    getOptionalEnvValue("SEO_PAID_PROVIDER"),
+    getOptionalEnvValue("DATAFORSEO_API_KEY"),
+    getOptionalEnvValue("TREG_API_TOKEN"),
+  ]);
+  switch (selectPaidSeoProvider(mode, directKey, tregToken)) {
+    case "dataforseo":
+      return withAuthorization(`Basic ${directKey!.trim()}`);
+    case "treg":
+      return createTregDataforseoFetch(tregToken!.trim());
+    default:
+      return null;
+  }
+}
+
 /** A fetch that reaches DataForSEO authenticated, for this deployment. */
 export async function getDataforseoFetch(): Promise<typeof fetch> {
   if (await isBehindEveryAppGateway()) {
+    if (!(await allowsGatewayDataforseo()))
+      throw new AppError("PAID_SEO_UNAVAILABLE", PAID_SEO_UNAVAILABLE);
     const providerFetch = await gatewayFetch("dataforseo");
     if (!providerFetch) {
       // Only local dev gets here (production always has the binding). The
@@ -77,13 +103,10 @@ export async function getDataforseoFetch(): Promise<typeof fetch> {
     }
     return providerFetch;
   }
-  if (!(await getOptionalEnvValue("DATAFORSEO_API_KEY"))) {
-    // No DataForSEO account of its own: buy the calls through treg instead.
-    const tregKey = await getOptionalEnvValue("TREG_API_TOKEN");
-    if (tregKey) return createTregDataforseoFetch(tregKey);
-  }
-  const apiKey = await getRequiredEnvValue("DATAFORSEO_API_KEY");
-  return withAuthorization(`Basic ${apiKey}`);
+  const providerFetch = await localPaidSeoFetch();
+  if (!providerFetch)
+    throw new AppError("PAID_SEO_UNAVAILABLE", PAID_SEO_UNAVAILABLE);
+  return providerFetch;
 }
 
 /** A fetch that reaches Context.dev authenticated, or null without a key. */
@@ -93,11 +116,6 @@ export async function getContextFetch(): Promise<typeof fetch | null> {
   return apiKey ? withAuthorization(`Bearer ${apiKey}`) : null;
 }
 
-const KEY_ENV: Record<OpenSeoProvider, string> = {
-  dataforseo: "DATAFORSEO_API_KEY",
-  context: "CONTEXT_API_KEY",
-};
-
 /**
  * Whether calls to the provider would go through, without making one. The
  * gateway answers this for no organization in particular, so it needs none.
@@ -106,18 +124,24 @@ export async function hasProviderAccess(
   provider: OpenSeoProvider,
 ): Promise<boolean> {
   if (await isBehindEveryAppGateway()) {
+    if (provider === "dataforseo" && !(await allowsGatewayDataforseo()))
+      return false;
     const status = await integrationStatus({
       env: await gatewayEnv(),
       provider,
     });
     return status.ready;
   }
-  if (await getOptionalEnvValue(KEY_ENV[provider])) return true;
-  return provider === "dataforseo"
-    ? Boolean(await getOptionalEnvValue("TREG_API_TOKEN"))
-    : false;
+  if (provider === "dataforseo") return Boolean(await localPaidSeoFetch());
+  return Boolean(await getOptionalEnvValue("CONTEXT_API_KEY"));
 }
 
 export function hasDataforseoAccess(): Promise<boolean> {
   return hasProviderAccess("dataforseo");
+}
+
+/** Check before reserving capacity or starting a paid-only workflow. */
+export async function requirePaidSeoAccess() {
+  if (!(await hasDataforseoAccess()))
+    throw new AppError("PAID_SEO_UNAVAILABLE", PAID_SEO_UNAVAILABLE);
 }

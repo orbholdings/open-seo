@@ -2,9 +2,8 @@ import { afterEach, expect, it, vi } from "vitest";
 import { fetchKeywordSuggestions, fetchRelatedKeywords } from "./labs";
 
 vi.mock("@/server/lib/runtime-env", () => ({
-  // AUTH_MODE unset: the deployment holds the DataForSEO key.
-  getOptionalEnvValue: vi.fn(async () => undefined),
-  getRequiredEnvValue: vi.fn(async () => "test-api-key"),
+  getOptionalEnvValue: async (name: string) =>
+    name === "DATAFORSEO_API_KEY" ? "test-api-key" : undefined,
 }));
 
 afterEach(() => vi.unstubAllGlobals());

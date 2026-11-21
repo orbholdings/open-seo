@@ -342,6 +342,7 @@ function mapErrorToResult(
     reason instanceof AppError &&
     (reason.code === "INSUFFICIENT_CREDITS" ||
       reason.code === "AI_SEARCH_BILLING_ISSUE" ||
+      reason.code === "PAID_SEO_UNAVAILABLE" ||
       reason.code === "DATAFORSEO_AUTH_FAILED" ||
       reason.code === "AUTH_CONFIG_MISSING")
   ) {

@@ -71,6 +71,8 @@ vi.mock("@/server/billing/subscription", () => ({
   customerHasPaidPlan: mocks.customerHasPaidPlan,
 }));
 vi.mock("@/server/lib/runtime-env", () => ({
+  getOptionalEnvValue: async (name: string) =>
+    name === "DATAFORSEO_API_KEY" ? "fixture" : undefined,
   isHostedServerAuthMode: mocks.isHostedServerAuthMode,
 }));
 

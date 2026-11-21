@@ -2,9 +2,8 @@ import { gzipSync } from "node:zlib";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/server/lib/runtime-env", () => ({
-  // AUTH_MODE unset: the deployment holds the DataForSEO key.
-  getOptionalEnvValue: vi.fn(async () => undefined),
-  getRequiredEnvValue: vi.fn(async () => "encoded-credentials"),
+  getOptionalEnvValue: async (name: string) =>
+    name === "DATAFORSEO_API_KEY" ? "encoded-credentials" : undefined,
 }));
 
 import { dataforseoPost } from "@/server/lib/dataforseo/core";

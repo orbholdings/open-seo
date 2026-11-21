@@ -18,7 +18,8 @@ services:
       - AUTH_MODE=local_noauth
       - OPENSEO_TELEMETRY_DISABLED=${OPENSEO_TELEMETRY_DISABLED:-}
       - DO_NOT_TRACK=${DO_NOT_TRACK:-}
-      - DATAFORSEO_API_KEY=${DATAFORSEO_API_KEY}
+      - SEO_PAID_PROVIDER=${SEO_PAID_PROVIDER:-auto}
+      - DATAFORSEO_API_KEY=${DATAFORSEO_API_KEY:-}
       # Optional: buy DataForSEO calls through treg.to instead of your own key.
       - TREG_API_TOKEN=${TREG_API_TOKEN:-}
       # Optional: AI features (the SAM agent). Without this the setup

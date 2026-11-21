@@ -100,8 +100,8 @@ export function IssuesView({
       {groups.length === 0 ? (
         <EmptyState
           variant="plain"
-          title="No issues found."
-          description="Every crawled page passed the issue checks."
+          title="No issues recorded."
+          description="Open Pages to see what the crawler could read."
         />
       ) : (
         <div>

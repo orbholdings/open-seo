@@ -1,3 +1,4 @@
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link2, ListPlus, MessagesSquare } from "lucide-react";
 import { z } from "zod";
@@ -11,7 +12,11 @@ export const Route = createFileRoute(
 )({
   head: () => pageHead("Prompt Research"),
   validateSearch: z.object({ q: z.string().trim().max(100).optional() }),
-  component: AiResearchRoute,
+  component: () => (
+    <PaidSeoGate title="Prompt research">
+      <AiResearchRoute />
+    </PaidSeoGate>
+  ),
 });
 
 const PROMPT_RESEARCH_FEATURES = [

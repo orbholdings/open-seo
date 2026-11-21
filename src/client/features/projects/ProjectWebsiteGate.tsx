@@ -1,3 +1,4 @@
+import { PaidSeoGate } from "@/client/features/providers/PaidSeoGate";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { projectsQueryOptions } from "@/client/features/projects/projectQueries";
@@ -28,7 +29,9 @@ export function ProjectWebsiteGate({
   if (project.domain) return children;
   return (
     <div className="grid min-h-[calc(100dvh-8rem)] place-items-center">
-      <ProjectWebsiteSetup projectId={projectId} />
+      <PaidSeoGate title="AI visibility research">
+        <ProjectWebsiteSetup projectId={projectId} />
+      </PaidSeoGate>
     </div>
   );
 }
