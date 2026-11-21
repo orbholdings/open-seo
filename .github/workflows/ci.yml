@@ -113,9 +113,10 @@ jobs:
 
       - name: Run the free-first Coolify stack on loopback
         env:
-          COMPOSE_FILE: compose.coolify.yaml:scripts/celld/smoke/compose.yaml
+          COMPOSE_FILE: docker-compose.yaml:scripts/celld/smoke/compose.yaml
           BETTER_AUTH_URL: http://127.0.0.1:3107
         run: |
+          cmp docker-compose.yaml compose.coolify.yaml
           export STORAGE_SECRET_KEY="$(openssl rand -hex 32)"
           trap 'docker compose down -v' EXIT
           docker compose up -d --no-build

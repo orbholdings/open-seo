@@ -1,4 +1,4 @@
-# Test overrides for compose.coolify.yaml. No external website is contacted by the fixture gateway.
+# Test overrides for the free-first Coolify stack. No external website is contacted by the fixture gateway.
 services:
   runtime:
     image: openseo-standalone:ci

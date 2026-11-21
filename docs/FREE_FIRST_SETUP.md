@@ -10,10 +10,12 @@ Create one project per website in the workspace. Each project has its own crawl 
 | Branch for PR #1        | `feature/free-first-seo`                  |
 | Build pack              | Docker Compose                            |
 | Base directory          | `/`                                       |
-| Docker Compose location | `/compose.coolify.yaml`                   |
+| Docker Compose location | `/docker-compose.yaml`                    |
 | Service for the domain  | `web`, internal port `80`                 |
 
-The Compose file builds this checkout. Allow at least 4 GiB of memory for Docker and use a Linux kernel with 4 KiB pages. Only the web service receives a domain. Keep access private while creating the first administrator account. Coolify can also leave automatic deployments off until you choose to release a revision.
+Coolify's deployment canvas can use its default file location. If Smart Scan selects `/compose.yaml`, choose `/docker-compose.yaml` to build this branch. Existing resources using `/compose.coolify.yaml` load the same stack.
+
+Allow at least 4 GiB of memory for Docker and use a Linux kernel with 4 KiB pages. Only the web service receives a domain. Keep access private while creating the first administrator account. Coolify can also leave automatic deployments off until you choose to release a revision.
 
 | Runtime variable     | Value                                                                        |
 | -------------------- | ---------------------------------------------------------------------------- |
