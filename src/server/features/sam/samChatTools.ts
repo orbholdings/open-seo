@@ -75,6 +75,7 @@ import {
 import { getSuggestedKeywordsTool } from "@/server/mcp/tools/get-suggested-keywords";
 import { researchKeywordsTool } from "@/server/mcp/tools/research-keywords";
 import { saveKeywordsTool } from "@/server/mcp/tools/save-keywords";
+import { getSearchConsoleInsightsTool } from "@/server/mcp/tools/get-search-console-insights";
 import {
   getSearchConsolePerformanceTool,
   inspectUrlsTool,
@@ -362,6 +363,7 @@ export function buildSamMcpTools(
     get_local_rank_grid: adaptTool(getLocalRankGridTool),
     get_keyword_metrics: adaptTool(getKeywordMetricsTool),
     get_search_console_performance: adaptTool(getSearchConsolePerformanceTool),
+    get_search_console_insights: adaptTool(getSearchConsoleInsightsTool),
     inspect_urls: adaptTool(inspectUrlsTool),
     // Unconditional like the MCP server's registrations — the GA4 launch gate
     // was removed in #505.

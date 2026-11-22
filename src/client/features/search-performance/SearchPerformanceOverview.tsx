@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/client/components/ui/card";
 import { Spinner } from "@/client/components/ui/spinner";
+import { SearchInsightsCards } from "@/client/features/search-performance/SearchInsightsCards";
 import { BiggestChangesCard } from "@/client/features/search-performance/SearchPerformanceChanges";
 import { SearchPerformanceChart } from "@/client/features/search-performance/SearchPerformanceChart";
 import type { Report } from "@/client/features/search-performance/SearchPerformanceColumns";
@@ -65,6 +66,9 @@ export function SearchPerformanceOverview({
           />
         </CardContent>
       </Card>
+      {!isPlaceholderData && report.insights && (
+        <SearchInsightsCards report={report} onSelect={onSelect} />
+      )}
       <BiggestChangesCard
         projectId={projectId}
         filterInput={filterInput}

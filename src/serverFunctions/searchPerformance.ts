@@ -11,12 +11,15 @@ import {
 import {
   buildClickChanges,
   buildDailyTrend,
-  buildStrikingDistanceRows,
   previousClicksLookup,
   previousPeriod,
   sumSearchTotals,
   toDimensionRows,
 } from "@/server/features/gsc/searchPerformanceReport";
+import {
+  DAILY_ROW_LIMIT,
+  getSearchOverview,
+} from "@/server/features/gsc/services/SearchInsightsService";
 import { requireProjectContext } from "@/serverFunctions/middleware";
 import {
   type SearchPerformanceType,
@@ -26,10 +29,6 @@ import {
   searchPerformanceTableInputSchema,
 } from "@/types/schemas/search-performance";
 
-// query x page fan-out needs more rows to find the 5..20 band.
-const STRIKING_DISTANCE_FETCH_LIMIT = 1000;
-// dimensions:["date"] returns one row per day; the longest range is ~92 days.
-const DAILY_ROW_LIMIT = 200;
 const COUNTRY_ROW_LIMIT = 25;
 // Export pulls the whole dimension in one shot, capped at GSC's per-call max
 // (GSC_MAX_ROW_LIMIT). Large stores get everything up to this ceiling.
@@ -91,43 +90,13 @@ export const getSearchPerformanceReport = createServerFn({ method: "POST" })
     const { startDate, endDate } = resolveDateRange({
       dateRange: data.dateRange,
     });
-    const prev = previousPeriod(startDate, endDate);
     const projectId = context.projectId;
     const { nonCountryFilters, filters } = buildGscFilters(data);
     const type = data.searchType;
 
     try {
-      const [current, previous, queryPages, countries] = await Promise.all([
-        GscService.getPerformance({
-          projectId,
-          startDate,
-          endDate,
-          type,
-          dimensions: ["date"],
-          filters,
-          rowLimit: DAILY_ROW_LIMIT,
-        }),
-        GscService.getPerformance({
-          projectId,
-          startDate: prev.startDate,
-          endDate: prev.endDate,
-          type,
-          dimensions: ["date"],
-          filters,
-          rowLimit: DAILY_ROW_LIMIT,
-        }),
-        // Striking distance needs queries and positions, which only web has.
-        type === "web"
-          ? GscService.getPerformance({
-              projectId,
-              startDate,
-              endDate,
-              type,
-              dimensions: ["query", "page"],
-              filters,
-              rowLimit: STRIKING_DISTANCE_FETCH_LIMIT,
-            })
-          : { rows: [] },
+      const [overview, countries] = await Promise.all([
+        getSearchOverview({ projectId, startDate, endDate, type, filters }),
         GscService.getPerformance({
           projectId,
           startDate,
@@ -141,17 +110,7 @@ export const getSearchPerformanceReport = createServerFn({ method: "POST" })
 
       return {
         connected: true as const,
-        range: {
-          startDate,
-          endDate,
-          prevStartDate: prev.startDate,
-          prevEndDate: prev.endDate,
-        },
-        totals: sumSearchTotals(current.rows),
-        prevTotals: sumSearchTotals(previous.rows),
-        trend: buildDailyTrend(current.rows, startDate, endDate),
-        prevTrend: buildDailyTrend(previous.rows, prev.startDate, prev.endDate),
-        strikingDistance: buildStrikingDistanceRows(queryPages.rows),
+        ...overview,
         countries: toDimensionRows(countries.rows),
       };
     } catch (error) {

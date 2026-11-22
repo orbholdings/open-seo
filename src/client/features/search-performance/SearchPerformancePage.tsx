@@ -359,6 +359,8 @@ export function SearchPerformancePage({
                 <StrikingDistanceTable
                   projectId={projectId}
                   rows={report.strikingDistance}
+                  opportunities={report.insights?.opportunities}
+                  onSelect={setSelection}
                   page={page}
                   pageSize={pageSize}
                   onPageChange={(nextPage) =>

@@ -69,8 +69,16 @@ describe("Search Performance combined filters", () => {
   });
 
   it("reads Discover without queries: no striking-distance scan, query filter, or device filter", async () => {
-    await getSearchPerformanceReport({
+    const report = await getSearchPerformanceReport({
       data: { ...data, searchType: "discover" },
+    });
+    expect(report).toMatchObject({
+      connected: true,
+      insights: {
+        clickChange: { change: 0, estimates: null },
+        overlap: null,
+        opportunities: null,
+      },
     });
 
     expect(getPerformance).toHaveBeenCalledTimes(3);
