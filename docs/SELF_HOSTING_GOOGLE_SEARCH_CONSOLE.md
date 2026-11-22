@@ -104,6 +104,26 @@ project.
   to production you only authorize once.
 - Search Console data comes from your own Google account, so OpenSEO never meters credits for it.
 
+## Read your search insights
+
+Open **Search Performance** in the connected project. **Why clicks changed**
+compares the selected dates with the preceding period of the same length. It
+shows the estimated contributions from changes in impressions and click-through
+rate. Both periods need impressions for that breakdown.
+
+Under **Pages appearing for the same search**, select a query or page to see
+its details. Two pages can serve different needs. Compare their queries before
+deciding to edit either page. The report reviews up to 1,000 query and page
+combinations returned by Google.
+
+Under **Striking distance**, estimated gains assume that a page keeps its
+impressions and reaches this site's observed click-through rate at positions
+5–10. OpenSEO shows estimates when it has at least five comparison queries and
+500 comparison impressions. You can also ask your connected assistant, “Why
+did clicks change over the last 28 days, and which pages should I look at?”
+These reports use the project's own Search Console data and use no OpenSEO
+credits.
+
 ## Troubleshooting
 
 **`redirect_uri_mismatch` from Google** — the redirect URI in your OAuth client

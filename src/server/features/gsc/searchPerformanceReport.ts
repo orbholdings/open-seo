@@ -36,7 +36,7 @@ type StrikingDistanceRow = {
 // where a content improvement most plausibly moves real traffic.
 const STRIKING_DISTANCE_MIN_POSITION = 5;
 const STRIKING_DISTANCE_MAX_POSITION = 20;
-const STRIKING_DISTANCE_ROW_LIMIT = 100;
+export const STRIKING_DISTANCE_ROW_LIMIT = 100;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

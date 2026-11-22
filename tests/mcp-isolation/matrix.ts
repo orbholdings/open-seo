@@ -26,6 +26,7 @@ export function foreignProjectCalls(b: Tenant, seeded: SeededData): ToolCall[] {
   const projectId = b.projectId;
   return [
     { name: "get_project_context", arguments: { projectId } },
+    { name: "get_search_console_insights", arguments: { projectId } },
     {
       name: "update_project_context",
       arguments: {

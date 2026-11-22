@@ -19,6 +19,8 @@ import {
   type Report,
   type SearchPerformanceTableRow,
 } from "@/client/features/search-performance/SearchPerformanceColumns";
+import { SearchClickOpportunities } from "@/client/features/search-performance/SearchClickOpportunities";
+import type { DetailSelection } from "@/client/features/search-performance/searchPerformanceQueries";
 import { normalizeExportValue, type CsvValue } from "@/client/lib/csv";
 import { exportRows } from "@/client/lib/exportRows";
 import { captureClientEvent } from "@/client/lib/posthog";
@@ -197,6 +199,8 @@ export function useSaveQueriesAsKeywords(
 export function StrikingDistanceTable({
   projectId,
   rows,
+  opportunities,
+  onSelect,
   page,
   pageSize,
   onPageChange,
@@ -206,6 +210,8 @@ export function StrikingDistanceTable({
 }: {
   projectId: string;
   rows: Report["strikingDistance"];
+  opportunities: Report["insights"]["opportunities"];
+  onSelect: (selection: DetailSelection) => void;
   page: number;
   pageSize: number;
   onPageChange: (page: number) => void;
@@ -261,6 +267,12 @@ export function StrikingDistanceTable({
           Queries ranking at positions 5 to 20, sorted by impressions. Improve
           the listed page to move them into the top results.
         </p>
+        {opportunities && (
+          <SearchClickOpportunities
+            opportunities={opportunities}
+            onSelect={onSelect}
+          />
+        )}
         <DataTable
           table={table}
           isFiltered={isFiltered && !isPastEnd}

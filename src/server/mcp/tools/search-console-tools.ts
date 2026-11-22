@@ -57,7 +57,7 @@ type ProjectAuthContext = {
 /** Self-hosted GSC requires the operator to provide a Google OAuth client and
  *  BETTER_AUTH_SECRET. Return this setup nudge before attempting a token lookup
  *  when either is missing. */
-async function missingSelfHostedGoogleClientResponse(
+export async function missingSelfHostedGoogleClientResponse(
   context: ProjectAuthContext,
   projectId: string,
 ) {
@@ -111,6 +111,25 @@ function describeGscError(error: unknown): string {
       : error.message;
   }
   return error instanceof Error ? error.message : String(error);
+}
+
+export function performanceFailure(
+  error: unknown,
+  meta: ReturnType<typeof buildProjectMeta>,
+  connectUrl: string,
+) {
+  const isNotConnected = error instanceof GscNotConnectedError;
+  const apiDisabled = error instanceof GscApiError && error.apiDisabled;
+  return mcpResponse({
+    text: `${describeGscError(error)}${isNotConnected ? ` Connect it here: ${connectUrl}` : apiDisabled ? "" : ` (reconnect at ${connectUrl})`}`,
+    meta,
+    structuredContent: {
+      ok: false,
+      reason: isNotConnected ? "not_connected" : "api_error",
+      connectionRequired: isNotConnected || error instanceof GscTokenError,
+      connectUrl,
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -359,18 +378,7 @@ export const getSearchConsolePerformanceTool = {
         },
       });
     } catch (error) {
-      const isNotConnected = error instanceof GscNotConnectedError;
-      const apiDisabled = error instanceof GscApiError && error.apiDisabled;
-      return mcpResponse({
-        text: `${describeGscError(error)}${isNotConnected ? ` Connect it here: ${connectUrl}` : apiDisabled ? "" : ` (reconnect at ${connectUrl})`}`,
-        meta,
-        structuredContent: {
-          ok: false,
-          reason: isNotConnected ? "not_connected" : "api_error",
-          connectionRequired: isNotConnected || error instanceof GscTokenError,
-          connectUrl,
-        },
-      });
+      return performanceFailure(error, meta, connectUrl);
     }
   }),
 };

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GscApiError, GscNotConnectedError } from "@/server/lib/gscErrors";
+import { getSearchConsoleInsightsTool } from "./get-search-console-insights";
 import * as searchConsoleTools from "./search-console-tools";
 import { makeToolContext, textContent } from "./tool-test-support";
 
@@ -34,16 +35,16 @@ const gscRow = (position: number, impressions = 100) => ({
   position,
 });
 
-describe("search console MCP tools", () => {
-  beforeEach(() => {
-    mocks.getProjectForOrganization.mockResolvedValue({
-      id: "project_1",
-      locationCode: 2840,
-      languageCode: "en",
-    });
-    mocks.hasGoogleOAuthConfig.mockResolvedValue(true);
+beforeEach(() => {
+  mocks.getProjectForOrganization.mockResolvedValue({
+    id: "project_1",
+    locationCode: 2840,
+    languageCode: "en",
   });
+  mocks.hasGoogleOAuthConfig.mockResolvedValue(true);
+});
 
+describe("search console MCP tools", () => {
   it("returns performance rows on success and passes filters through", async () => {
     mocks.GscService.getPerformance.mockResolvedValue({
       siteUrl: "https://example.com/",
@@ -245,20 +246,24 @@ describe("search console MCP tools", () => {
     expect(mocks.GscService.getPerformance).not.toHaveBeenCalled();
   });
 
-  it("returns a setup message in self-hosted mode without a Google client", async () => {
-    mocks.hasGoogleOAuthConfig.mockResolvedValue(false);
-    const { getSearchConsolePerformanceTool } = searchConsoleTools;
+  it.each([
+    searchConsoleTools.getSearchConsolePerformanceTool,
+    getSearchConsoleInsightsTool,
+  ])(
+    "returns a setup message for $name in self-hosted mode without a Google client",
+    async (tool) => {
+      mocks.hasGoogleOAuthConfig.mockResolvedValue(false);
+      const result = await tool.handler(
+        { projectId: "project_1" },
+        toolContext,
+      );
 
-    const result = await getSearchConsolePerformanceTool.handler(
-      { projectId: "project_1" },
-      toolContext,
-    );
-
-    expect(result.structuredContent).toMatchObject({
-      reason: "gsc_oauth_not_configured",
-    });
-    expect(mocks.GscService.getPerformance).not.toHaveBeenCalled();
-  });
+      expect(result.structuredContent).toMatchObject({
+        reason: "gsc_oauth_not_configured",
+      });
+      expect(mocks.GscService.getPerformance).not.toHaveBeenCalled();
+    },
+  );
 
   it("inspects multiple URLs and reports partial failures inline", async () => {
     mocks.GscService.inspectUrls.mockResolvedValue({
@@ -356,5 +361,82 @@ describe("search console MCP tools", () => {
       reason: "gsc_oauth_not_configured",
     });
     expect(mocks.GscService.inspectUrls).not.toHaveBeenCalled();
+  });
+});
+
+describe("search console insights", () => {
+  it("reports the compared dates, estimated click change and measured page pair through the free insights tool", async ({
+    onTestFinished,
+  }) => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    onTestFinished(() => {
+      vi.useRealTimers();
+    });
+    vi.setSystemTime(new Date("2026-11-20T12:00:00Z"));
+    const siteUrl = "https://example.com/";
+    mocks.GscService.getPerformance
+      .mockResolvedValueOnce({
+        siteUrl,
+        rows: [{ clicks: 18, impressions: 1500, position: 9 }],
+      })
+      .mockResolvedValueOnce({
+        siteUrl,
+        rows: [{ clicks: 20, impressions: 1000, position: 8 }],
+      })
+      .mockResolvedValueOnce({
+        siteUrl,
+        rows: [
+          { ...gscRow(7, 100), keys: ["hens", siteUrl + "hens"] },
+          { ...gscRow(9, 40), keys: ["hens", siteUrl + "poultry"] },
+        ],
+      });
+    const tool = getSearchConsoleInsightsTool;
+    const result = await tool.handler(
+      { projectId: "project_1", dateRange: "last_7_days" },
+      toolContext,
+    );
+    expect(
+      tool.config.outputSchema.safeParse(result.structuredContent).success,
+    ).toBe(true);
+    expect(result.structuredContent).toMatchObject({
+      ok: true,
+      siteUrl,
+      range: {
+        startDate: "2026-11-11",
+        endDate: "2026-11-17",
+        prevStartDate: "2026-11-04",
+        prevEndDate: "2026-11-10",
+      },
+      clickChange: {
+        change: -2,
+        estimates: { fromImpressions: 8, fromCtr: -10 },
+      },
+      overlap: {
+        rowsReviewed: 2,
+        queries: [
+          {
+            query: "hens",
+            primary: { page: siteUrl + "hens" },
+            secondary: { impressions: 40 },
+          },
+        ],
+      },
+      opportunities: { benchmark: { ctr: null }, queries: [] },
+    });
+    expect(textContent(result)).toContain(
+      "hens | https://example.com/poultry | 40",
+    );
+    expect(mocks.GscService.getPerformance).toHaveBeenCalledTimes(3);
+  });
+
+  it("checks project membership before reading another site's insights", async () => {
+    mocks.getProjectForOrganization.mockResolvedValue(null);
+    await expect(
+      getSearchConsoleInsightsTool.handler(
+        { projectId: "private" },
+        toolContext,
+      ),
+    ).rejects.toThrow();
+    expect(mocks.GscService.getPerformance).not.toHaveBeenCalled();
   });
 });
